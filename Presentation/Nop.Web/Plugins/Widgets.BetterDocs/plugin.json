@@ -1,0 +1,11 @@
+{
+  "Group": "Widgets",
+  "FriendlyName": "BetterDocs",
+  "SystemName": "Widgets.BetterDocs",
+  "Version": "1.00",
+  "SupportedVersions": [ "4.40" ],
+  "Author": "EG",
+  "DisplayOrder": 1,
+  "FileName": "Nop.Plugin.Widgets.BetterDocs.dll",
+  "Description": "This plugin allows you to add documents to an entity"
+}
