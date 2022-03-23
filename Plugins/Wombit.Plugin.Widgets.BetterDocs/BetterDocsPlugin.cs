@@ -14,7 +14,7 @@ using Nop.Web.Framework;
 
 namespace Wombit.Plugin.Widgets.BetterDocs
 {
-    public class BetterDocs : BasePlugin, IAdminMenuPlugin
+    public class BetterDocsPlugin : BasePlugin, IAdminMenuPlugin
     {
       
 
@@ -25,7 +25,7 @@ namespace Wombit.Plugin.Widgets.BetterDocs
 
      
 
-        public BetterDocs(
+        public BetterDocsPlugin(
             ILocalizationService localizationService,
             WidgetSettings widgetSettings,
             ISettingService settingService,
@@ -43,7 +43,7 @@ namespace Wombit.Plugin.Widgets.BetterDocs
             {
                 SystemName = "Admin.BetterDocs",
                 Title = "BetterDocs",
-                ControllerName = "WidgetsBetterDocsAdminController",
+                ControllerName = "AdminBetterDocs",
                 ActionName = "Index",
                 IconClass = "far fa-dot-circle",
                 Visible = true,

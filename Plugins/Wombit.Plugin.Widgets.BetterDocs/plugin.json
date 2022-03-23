@@ -2,10 +2,10 @@
   "Group": "Widgets",
   "FriendlyName": "BetterDocs",
   "SystemName": "Widgets.BetterDocs",
-  "Version": "1.00",
+  "Version": "1.0",
   "SupportedVersions": [ "4.40" ],
   "Author": "EG",
   "DisplayOrder": 1,
-  "FileName": "Nop.Plugin.Widgets.BetterDocs.dll",
+  "FileName": "WOmbit.Plugin.Widgets.BetterDocs.dll",
   "Description": "This plugin allows you to add documents to an entity"
 }

@@ -1,0 +1,20 @@
+﻿@model IEnumerable<Wombit.Plugin.Widgets.BetterDocs.Areas.Admin.Models.DocumentListModel>
+
+@{
+    Layout = "";
+}
+
+@if(Model.Any())
+{
+
+<p>
+    
+    @foreach (var item in Model)
+         {
+        @item.Title
+         }
+         
+     
+</p>
+
+}
