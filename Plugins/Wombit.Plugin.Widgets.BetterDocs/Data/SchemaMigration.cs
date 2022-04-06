@@ -3,7 +3,7 @@ using Nop.Data.Extensions;
 using Nop.Data.Migrations;
 using Wombit.Plugin.Widgets.BetterDocs.Domain;
 
-namespace Nop.Plugin.Other.ProductViewTracker.Migrations
+namespace Wombit.Plugin.Widgets.BetterDocs.Data
 {
     [NopMigration("2022/03/23 11:35:55:1687541", "Widgets.Document base schema")]
     public class SchemaMigration : AutoReversingMigration
@@ -18,7 +18,6 @@ namespace Nop.Plugin.Other.ProductViewTracker.Migrations
 
         public override void Up()
         {
-            _migrationManager.BuildTable<DocumentBundle>(Create);
             _migrationManager.BuildTable<Document>(Create);
         }
     }

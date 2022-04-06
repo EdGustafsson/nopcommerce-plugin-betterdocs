@@ -6,6 +6,6 @@
   "SupportedVersions": [ "4.40" ],
   "Author": "EG",
   "DisplayOrder": 1,
-  "FileName": "WOmbit.Plugin.Widgets.BetterDocs.dll",
+  "FileName": "Wombit.Plugin.Widgets.BetterDocs.dll",
   "Description": "This plugin allows you to add documents to an entity"
 }

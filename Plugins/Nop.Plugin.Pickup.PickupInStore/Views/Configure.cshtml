@@ -6,15 +6,15 @@
     Layout = "_ConfigurePlugin";
 }
 
-<form asp-controller="PickupInStore" asp-action="Configure" method="post" id="pickup-instore-form">
+<form asp-controller="BetterDocs" asp-action="Configure" method="post" id="document-form">
     <div class="cards-group">
         <div class="card card-default">
             <div class="card-body">
                 @await Html.PartialAsync("Table", new DataTablesModel
            {
                Name = "pickup-points-grid",
-               UrlRead = new DataUrl("List", "PickupInStore", null),
-               UrlDelete = new DataUrl("Delete", "PickupInStore", null),
+               UrlRead = new DataUrl("List", "BetterDocs", null),
+               UrlDelete = new DataUrl("Delete", "BetterDocs", null),
                Length = Model.PageSize,
                LengthMenu = Model.AvailablePageSizes,
                ColumnCollection = new List<ColumnProperty>

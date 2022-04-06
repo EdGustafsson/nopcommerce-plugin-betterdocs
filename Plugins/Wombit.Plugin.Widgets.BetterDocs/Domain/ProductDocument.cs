@@ -1,12 +1,14 @@
 ﻿using Nop.Core;
+using System;
 
 namespace Wombit.Plugin.Widgets.BetterDocs.Domain
 {
-    public class DocumentBundle : BaseEntity
+    public partial class ProductDocument : BaseEntity
     {
-        public int Id { get; set; }
-        public int DocumentId   { get; set; }
+        public int DocumentId  { get; set; }
         public int EntityId { get; set; }
         public string KeyGroup { get; set; }
+
     }
 }
+ 

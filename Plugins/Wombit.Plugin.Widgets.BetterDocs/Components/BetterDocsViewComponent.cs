@@ -11,14 +11,14 @@ using Nop.Services.Media;
 using Nop.Web.Framework.Components;
 
 
-namespace Wombit.Plugin.Widgets.BetterDocs.Areas.Admin.Component
+namespace Wombit.Plugin.Widgets.BetterDocs.Component
 {
-    [ViewComponent(Name = "AdminBetterDocs")]
-    public class AdminBetterDocsViewComponent : NopViewComponent
+    [ViewComponent(Name = "BetterDocs")]
+    public class BetterDocsViewComponent : NopViewComponent
     {
 
         private readonly ISettingService _settingService;
-        public AdminBetterDocsViewComponent(
+        public BetterDocsViewComponent(
             ISettingService settingService
             )
         {

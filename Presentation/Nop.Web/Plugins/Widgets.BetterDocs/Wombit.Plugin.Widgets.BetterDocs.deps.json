@@ -33,6 +33,7 @@
     ".NETCoreApp,Version=v5.0": {
       "Wombit.Plugin.Widgets.BetterDocs/1.0.0": {
         "dependencies": {
+          "Nop.Web": "4.4.0",
           "Nop.Web.Framework": "4.4.0",
           "Microsoft.AspNetCore.Antiforgery": "5.0.0.0",
           "Microsoft.AspNetCore.Authentication.Abstractions": "5.0.0.0",
@@ -3712,6 +3713,20 @@
         },
         "compile": {
           "Nop.Services.dll": {}
+        }
+      },
+      "Nop.Web/4.4.0": {
+        "dependencies": {
+          "Nop.Core": "4.4.0",
+          "Nop.Data": "4.4.0",
+          "Nop.Services": "4.4.0",
+          "Nop.Web.Framework": "4.4.0"
+        },
+        "runtime": {
+          "Nop.Web.dll": {}
+        },
+        "compile": {
+          "Nop.Web.dll": {}
         }
       },
       "Nop.Web.Framework/4.4.0": {
@@ -7506,6 +7521,11 @@
       "sha512": ""
     },
     "Nop.Services/4.4.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "Nop.Web/4.4.0": {
       "type": "project",
       "serviceable": false,
       "sha512": ""

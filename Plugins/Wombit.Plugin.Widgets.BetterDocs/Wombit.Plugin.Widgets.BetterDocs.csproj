@@ -14,27 +14,53 @@
 		<CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
 	</PropertyGroup>
 	<ItemGroup>
-	  <None Remove="Areas\Admin\Views\Default.cshtml" />
-	  <None Remove="Areas\Admin\Views\_ViewImports.cshtml" />
+	  <None Remove="Views\Configure.cshtml" />
+	  <None Remove="Views\Create.cshtml" />
+	  <None Remove="Views\Edit.cshtml" />
+	  <None Remove="Views\ProductAddPopup.cshtml" />
+	  <None Remove="Views\_CreateOrUpdate.cshtml" />
+	  <None Remove="Views\_CreateOrUpdate.Products.cshtml" />
+	  <None Remove="Views\_ViewImports.cshtml" />
 	  <None Remove="plugin.json" />
+	  <None Remove="Views\_ViewStart.cshtml" />
 	</ItemGroup>
 	<ItemGroup>
 		<ProjectReference Include="..\..\Presentation\Nop.Web.Framework\Nop.Web.Framework.csproj" />
+		<ProjectReference Include="..\..\Presentation\Nop.Web\Nop.Web.csproj" />
 		<ClearPluginAssemblies Include="$(MSBuildProjectDirectory)\..\..\Build\ClearPluginAssemblies.proj" />
 	</ItemGroup>
 	<ItemGroup>
-	  <Content Include="Areas\Admin\Views\Default.cshtml">
+	  <Content Include="Views\Configure.cshtml">
 	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 	  </Content>
-	  <Content Include="Areas\Admin\Views\_ViewImports.cshtml">
+	  <Content Include="Views\Create.cshtml">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </Content>
+	  <Content Include="Views\Edit.cshtml">
+	    <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+	    <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+	  </Content>
+	  <Content Include="Views\ProductAddPopup.cshtml">
+	    <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+	    <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+	  </Content>
+	  <Content Include="Views\_CreateOrUpdate.cshtml">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </Content>
+	  <Content Include="Views\_CreateOrUpdate.Products.cshtml">
+	    <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+	    <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+	  </Content>
+	  <Content Include="Views\_ViewImports.cshtml">
 	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 	  </Content>
 	  <Content Include="plugin.json">
 	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 	  </Content>
-	</ItemGroup>
-	<ItemGroup>
-	  <Folder Include="Components\" />
+	  <Content Include="Views\_ViewStart.cshtml">
+	    <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+	    <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+	  </Content>
 	</ItemGroup>
 	<!-- This target execute after "Build" target -->
 	<Target Name="NopTarget" AfterTargets="Build">

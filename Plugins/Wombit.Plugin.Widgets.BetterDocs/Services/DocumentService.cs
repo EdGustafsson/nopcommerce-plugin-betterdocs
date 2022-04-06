@@ -7,10 +7,12 @@ using Nop.Data;
 using Wombit.Plugin.Widgets.BetterDocs.Domain;
 using Nop.Core.Events;
 using Nop.Services.Events;
+using Nop.Core;
+using Nop.Core.Caching;
 
 namespace Wombit.Plugin.Widgets.BetterDocs.Services
 {
-    public class DocumentService : IDocumentService
+    public partial class DocumentService : IDocumentService
     {
         private readonly IRepository<Document> _repository;
         private readonly IEventPublisher _eventPublisher;
@@ -69,11 +71,67 @@ namespace Wombit.Plugin.Widgets.BetterDocs.Services
 
             // fix
 
-            return await _repository.GetAllAsync(async query =>
+            return await _repository.GetAllAsync(query =>
             {
                 return query.OrderBy(t => t.DisplayOrder);
             });
         }
+
+        public virtual async Task<IPagedList<Document>> GetAllDocumentsAsync(int downloadId = 0, int pageIndex = 0, int pageSize = int.MaxValue)
+        {
+            var rez = await _repository.GetAllAsync(query =>
+            {
+                if (downloadId > 0)
+                    query = query.Where(point => point.DownloadId == downloadId || point.Id == 0);
+                query = query.OrderBy(point => point.DisplayOrder).ThenBy(point => point.Title);
+
+                return query;
+            });
+
+            return new PagedList<Document>(rez, pageIndex, pageSize);
+        }
+
+        public virtual async Task<Document> GetDocumentByIdAsync(int downloadId)
+        {
+            return await _repository.GetByIdAsync(downloadId);
+        }
+
+        public virtual async Task<IList<Document>> GetDocumentsByIdsAsync(int[] documentIds)
+        {
+            return await _repository.GetByIdsAsync(documentIds, includeDeleted: false);
+        }
+
+         public virtual async Task DeleteDocumentAsync(Document document)
+        {
+            await _repository.DeleteAsync(document);
+        }
+
+        public virtual async Task DeleteDocumentsAsync(IList<Document> documents)
+        {
+            if (documents == null)
+                throw new ArgumentNullException(nameof(documents));
+
+            foreach (var document in documents)
+                await DeleteDocumentAsync(document);
+        }
+
+        //public virtual async Task InsertStorePickupPointAsync(StorePickupPoint pickupPoint)
+        //{
+        //    await _storePickupPointRepository.InsertAsync(pickupPoint, false);
+        //    await _staticCacheManager.RemoveByPrefixAsync(PICKUP_POINT_PATTERN_KEY);
+        //}
+
+        //public virtual async Task UpdateStorePickupPointAsync(StorePickupPoint pickupPoint)
+        //{
+        //    await _storePickupPointRepository.UpdateAsync(pickupPoint, false);
+        //    await _staticCacheManager.RemoveByPrefixAsync(PICKUP_POINT_PATTERN_KEY);
+        //}
+
+        //public virtual async Task DeleteStorePickupPointAsync(StorePickupPoint pickupPoint)
+        //{
+        //    await _storePickupPointRepository.DeleteAsync(pickupPoint, false);
+        //    await _staticCacheManager.RemoveByPrefixAsync(PICKUP_POINT_PATTERN_KEY);
+        //}
     }
 }
 

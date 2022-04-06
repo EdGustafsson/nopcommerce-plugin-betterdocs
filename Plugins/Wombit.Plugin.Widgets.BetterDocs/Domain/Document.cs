@@ -3,9 +3,9 @@ using System;
 
 namespace Wombit.Plugin.Widgets.BetterDocs.Domain
 {
-    public class Document : BaseEntity
+    public partial class Document : BaseEntity
     {
-        public int Id { get; set; }
+        public int DownloadId { get; set; }
         public string Title { get; set; }
         public string FileName { get; set; }
         public int DisplayOrder { get; set; }

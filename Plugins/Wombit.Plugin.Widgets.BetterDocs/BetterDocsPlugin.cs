@@ -43,8 +43,8 @@ namespace Wombit.Plugin.Widgets.BetterDocs
             {
                 SystemName = "Admin.BetterDocs",
                 Title = "BetterDocs",
-                ControllerName = "AdminBetterDocs",
-                ActionName = "Index",
+                ControllerName = "BetterDocs",
+                ActionName = "Configure",
                 IconClass = "far fa-dot-circle",
                 Visible = true,
                 RouteValues = new RouteValueDictionary() { { "area", AreaNames.Admin } },
