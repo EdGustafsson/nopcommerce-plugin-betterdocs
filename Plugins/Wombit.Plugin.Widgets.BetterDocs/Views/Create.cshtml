@@ -26,14 +26,14 @@
 </form>*@
 
 
-@model Wombit.Plugin.Widgets.BetterDocs.Models.DocumentModel
+@model DocumentModel
 @{
+    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
     ViewBag.PageTitle = T("Admin.Common.AddNew").Text;
-    //active menu item (system name)
     Html.SetActiveMenuItemSystemName("Documents");
 }
 
-<form asp-controller="Category" asp-action="Create" method="post" id="category-form">
+<form asp-controller="BetterDocs" asp-action="Create" method="post" id="document-form">
     <div class="content-header clearfix">
         <h1 class="float-left">
             @T("Admin.Common.AddNew")
@@ -53,5 +53,5 @@
             </button>
         </div>
     </div>
-    @await Html.PartialAsync("_CreateOrUpdate", Model)
+    @await Html.PartialAsync("~/Plugins/Widgets.BetterDocs/Views/_CreateOrUpdate.cshtml", Model)
 </form>

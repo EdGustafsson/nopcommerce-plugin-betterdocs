@@ -8,6 +8,7 @@ namespace Wombit.Plugin.Widgets.BetterDocs.Domain
         public int DocumentId  { get; set; }
         public int EntityId { get; set; }
         public string KeyGroup { get; set; }
+        public int DisplayOrder { get; set; }
 
     }
 }

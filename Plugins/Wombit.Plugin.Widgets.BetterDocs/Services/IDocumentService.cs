@@ -20,6 +20,11 @@ namespace Wombit.Plugin.Widgets.BetterDocs.Services
         Task<IList<Document>> GetDocumentsByIdsAsync(int[] documentIds);
         Task DeleteDocumentAsync(Document document);
         Task DeleteDocumentsAsync(IList<Document> documents);
+        Task<IPagedList<ProductDocument>> GetProductDocumentsByDocumentIdAsync(int documentId,
+            int pageIndex = 0, int pageSize = int.MaxValue, bool showHidden = false);
+        Task<ProductDocument> GetProductDocumentByIdAsync(int productDocumentId);
+        Task UpdateProductDocumentAsync(ProductDocument productDocument);
+        Task DeleteProductDocumentAsync(ProductDocument productDocument);
     }
 }
 

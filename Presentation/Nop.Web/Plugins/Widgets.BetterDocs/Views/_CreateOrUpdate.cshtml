@@ -1,53 +1,25 @@
-﻿@model Wombit.Plugin.Widgets.BetterDocs.Models.DocumentModel
+﻿@model DocumentModel
+
+ @{
+    const string hideInfoBlockAttributeName = "DocumentPage.HideInfoBlock";
+    var hideInfoBlock = await genericAttributeService.GetAttributeAsync<bool>(await workContext.GetCurrentCustomerAsync(), hideInfoBlockAttributeName);
+
+    const string hideProductBlockAttributeName = "DocumentPage.HideDisplayBlock";
+    var hideDisplayBlock = await genericAttributeService.GetAttributeAsync<bool>(await workContext.GetCurrentCustomerAsync(), hideProductBlockAttributeName, defaultValue: true);
+}
 
 <div asp-validation-summary="All"></div>
 <input asp-for="Id" type="hidden" />
 
-@if (ViewBag.RefreshPage == true)
-{
-    <script>
-    try {
-        window.opener.document.getElementById('@(Context.Request.Query["btnId"])').click();
-    }
-    catch (e) { }
-        window.close();
-    </script>
-}
+<section class="content">
+    <div class="container-fluid">
+        <div class="form-horizontal">
 
-<div class="content">
-    <div class="form-horizontal">
-        <div class="cards-group">
-            <div class="card card-default card-popup">
-                        <div class="card-body">
-                            <div class="form-group row">
-                                <div class="col-md-3">
-                                    <nop-label asp-for="DownloadId" />
-                                </div>
-                                <div class="col-md-9">
-                                    <nop-editor asp-for="DownloadId" />
-                                    <span asp-validation-for="DownloadId"></span>
-                                </div>
-                            </div>
-                            <div class="form-group row">
-                                <div class="col-md-3">
-                                    <nop-label asp-for="DisplayOrder" />
-                                </div>
-                                <div class="col-md-9">
-                                    <nop-editor asp-for="DisplayOrder" />
-                                    <span asp-validation-for="DisplayOrder"></span>
-                                </div>
-                            </div>
-                            <div class="form-group row">
-                                <div class="col-md-3">
-                                    <nop-label asp-for="Title" />
-                                </div>
-                                <div class="col-md-9">
-                                    <nop-editor asp-for="Title" />
-                                    <span asp-validation-for="Title"></span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+            <nop-cards id="category-cards">
+                <nop-card asp-name="documents-info" asp-icon="fas fa-info" asp-title="@T("Wombit.Admin.Documents.Info")" asp-hide-block-attribute-name="@hideInfoBlockAttributeName" asp-hide="@hideInfoBlock" >@await Html.PartialAsync("~/Plugins/Widgets.BetterDocs/Views/_CreateOrUpdate.Info.cshtml", Model)</nop-card>
+                <nop-card asp-name="documents-products" asp-icon="fas fa-tv" asp-title="@T("Wombit.Admin.Documents.Display")" asp-hide-block-attribute-name="@hideProductBlockAttributeName" asp-hide="@hideDisplayBlock" >@await Html.PartialAsync("~/Plugins/Widgets.BetterDocs/Views/_CreateOrUpdate.Products.cshtml", Model)</nop-card>
+
+            </nop-cards>
+        </div>
     </div>
-</div>
+</section>

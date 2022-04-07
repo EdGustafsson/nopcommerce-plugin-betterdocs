@@ -1,4 +1,4 @@
-﻿@using Nop.Web.Framework.Infrastructure
+﻿@*@using Nop.Web.Framework.Infrastructure*@
 @*@inject Nop.Core.Domain.Common.AdminAreaSettings adminAreaSettings
     @using Wombit.Plugin.Widgets.BetterDocs.Models
     @using Nop.Web.Framework.Models.DataTables
@@ -48,19 +48,18 @@
     </div>
     </form>*@
 
-@model Wombit.Plugin.Widgets.BetterDocs.Models.DocumentSearchModel
-@using Nop.Web.Framework.Models.DataTables
-@using Wombit.Plugin.Widgets.BetterDocs.Models
+@model DocumentSearchModel
 
 @{
-
+   
+    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
     ViewBag.PageTitle = T("Wombit.Admin.Documents").Text;
     Html.SetActiveMenuItemSystemName("Documents");
 }
 
 <div class="content-header clearfix">
     <h1 class="float-left">
-        @T("Admin.Catalog.Categories")
+        @T("Wombit.Admin.Documents")
     </h1>
     <div class="float-right">
         <a asp-action="Create" class="btn btn-primary">
@@ -81,7 +80,7 @@
             <div class="cards-group">
                 <div class="card card-default">
                     <div class="card-body">
-                        <nop-doc-reference asp-string-resource="@T("Admin.Documentation.Reference.Categories")" />
+                        <nop-doc-reference asp-string-resource="@T("Wombit.Documentation.Reference.Documents")" />
 
                         @await Html.PartialAsync("Table", new DataTablesModel
                         {
