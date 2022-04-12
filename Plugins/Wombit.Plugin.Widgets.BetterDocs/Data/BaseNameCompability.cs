@@ -9,7 +9,8 @@ namespace Wombit.Plugin.Widgets.BetterDocs.Data
     {
         public Dictionary<Type, string> TableNames => new Dictionary<Type, string>
         {
-            { typeof(Document), "w_Document" }
+            { typeof(Document), "w_Document" },
+            { typeof(ProductDocument), "w_ProductDocument" }
         };
 
         public Dictionary<(Type, string), string> ColumnName => new Dictionary<(Type, string), string>

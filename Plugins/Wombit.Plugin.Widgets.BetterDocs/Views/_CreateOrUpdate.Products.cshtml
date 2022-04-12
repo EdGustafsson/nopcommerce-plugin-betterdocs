@@ -6,11 +6,11 @@
         @await Html.PartialAsync("Table", new DataTablesModel
         {
             Name = "products-grid",
-            UrlRead = new DataUrl("ProductList", "BetterDocs", new RouteValueDictionary { [nameof(Model.DocumentProductSearchModel.DocumentId)] = Model.DocumentProductSearchModel.DocumentId }),
+            UrlRead = new DataUrl("ProductList", "BetterDocs", new RouteValueDictionary { [nameof(Model.ProductDocumentSearchModel.DocumentId)] = Model.ProductDocumentSearchModel.DocumentId }),
             UrlDelete = new DataUrl("ProductDelete", "BetterDocs", null),
             UrlUpdate = new DataUrl("ProductUpdate", "BetterDocs", null),
-            Length = Model.DocumentProductSearchModel.PageSize,
-            LengthMenu = Model.DocumentProductSearchModel.AvailablePageSizes,
+            Length = Model.ProductDocumentSearchModel.PageSize,
+            LengthMenu = Model.ProductDocumentSearchModel.AvailablePageSizes,
             ColumnCollection = new List<ColumnProperty>
                 {
                     new ColumnProperty(nameof(ProductDocumentModel.ProductName))
@@ -51,9 +51,9 @@
     </div>
     <div class="card-footer">
         <button type="submit" id="btnAddNewProduct"
-                onclick="javascript:OpenWindow('@(Url.Action("ProductAddPopup", "Category", new { categoryId = Model.Id, btnId = "btnRefreshProducts", formId = "category-form" }))', 800, 800, true); return false;"
+                onclick="javascript:OpenWindow('@(Url.Action("ProductAddPopup", "BetterDocs", new { documentId = Model.Id, btnId = "btnRefreshProducts", formId = "document-form" }))', 800, 800, true); return false;"
                 class="btn btn-primary">
-            @T("Admin.Catalog.Categories.Products.AddNew")
+            @T("Admin.Common.AddNew")
         </button>
         <button type="submit" id="btnRefreshProducts" style="display: none"></button>
         <script>
@@ -70,7 +70,7 @@
 else
 {
     <div class="card-body">
-        @T("Admin.Catalog.Categories.Products.SaveBeforeEdit")
+        @T("Wombit.Plugin.Fields.SaveBeforeEdit")
     </div>
 }
 

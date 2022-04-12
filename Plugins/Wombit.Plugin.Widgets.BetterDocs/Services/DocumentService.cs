@@ -47,7 +47,7 @@ namespace Wombit.Plugin.Widgets.BetterDocs.Services
         }
 
 
-        public async Task InsertAsync(Document document)
+        public virtual async Task InsertAsync(Document document)
         {
             if (document == null)
                 throw new ArgumentNullException(nameof(document));
@@ -57,7 +57,7 @@ namespace Wombit.Plugin.Widgets.BetterDocs.Services
             await _eventPublisher.EntityInsertedAsync(document);
         }
 
-        public async Task UpdateAsync(Document document)
+        public virtual async Task UpdateAsync(Document document)
         {
             if (document == null)
                 throw new ArgumentNullException(nameof(document));
@@ -67,7 +67,7 @@ namespace Wombit.Plugin.Widgets.BetterDocs.Services
             await _eventPublisher.EntityUpdatedAsync(document);
         }
 
-        public async Task DeleteAsync(Document document)
+        public virtual async Task DeleteAsync(Document document)
         {
             if (document == null)
                 throw new ArgumentNullException(nameof(document));
@@ -77,7 +77,7 @@ namespace Wombit.Plugin.Widgets.BetterDocs.Services
             await _eventPublisher.EntityDeletedAsync(document);
         }
 
-        public async Task<Document> GetDocumentAsync(int id)
+        public virtual async Task<Document> GetDocumentAsync(int id)
         {
             if (id == 0)
                 return null;
@@ -85,7 +85,7 @@ namespace Wombit.Plugin.Widgets.BetterDocs.Services
             return await _documentRepository.GetByIdAsync(id);
         }
 
-        public async Task<IList<Document>> GetDocumentsAsync()
+        public virtual async Task<IList<Document>> GetDocumentsAsync()
         {
             // return await _repository.GetAllAsync();
 
@@ -177,6 +177,20 @@ namespace Wombit.Plugin.Widgets.BetterDocs.Services
         public virtual async Task DeleteProductDocumentAsync(ProductDocument productDocument)
         {
             await _productDocumentRepository.DeleteAsync(productDocument);
+        }
+
+        public virtual ProductDocument FindProductDocument(IList<ProductDocument> source, int productId, int documentId)
+        {
+            foreach (var productDocument in source)
+                if (productDocument.EntityId == productId && productDocument.DocumentId == documentId)
+                    return productDocument;
+
+            return null;
+        }
+
+        public virtual async Task InsertProductDocumentAsync(ProductDocument productDocument)
+        {
+            await _productDocumentRepository.InsertAsync(productDocument);
         }
 
 

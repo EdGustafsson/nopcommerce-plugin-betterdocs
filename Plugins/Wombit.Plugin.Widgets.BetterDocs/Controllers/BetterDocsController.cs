@@ -45,18 +45,21 @@ namespace Wombit.Plugin.Widgets.BetterDocs.Controllers
 
         private readonly IDocumentService _documentService;
         private readonly IDocumentModelFactory _documentModelFactory;
+        private readonly IProductService _productService;
 
         public BetterDocsController(
            IDocumentService documentService,
-           IDocumentModelFactory documentModelFactory)
+           IDocumentModelFactory documentModelFactory,
+           IProductService productService)
         {
             _documentService = documentService;
             _documentModelFactory = documentModelFactory;
+            _productService = productService;
         }
         public async Task<IActionResult> Configure()
         {
 
-           var documents = await _documentService.GetDocumentsAsync();
+            var documents = await _documentService.GetDocumentsAsync();
 
             var models = new List<DocumentModel>();
 
@@ -98,33 +101,113 @@ namespace Wombit.Plugin.Widgets.BetterDocs.Controllers
 
         public async Task<IActionResult> Create()
         {
-            var model = new DocumentModel();
+            var model = await _documentModelFactory.PrepareDocumentModelAsync(new DocumentModel(), null);
 
             return View("~/Plugins/Widgets.BetterDocs/Views/Create.cshtml", model);
         }
 
 
+        //[HttpPost, ParameterBasedOnFormName("save-continue", "continueEditing")]
+        //public async Task<IActionResult> Create(DocumentModel model, bool continueEditing)
+        //{
+
+        //    var document = new Document
+        //    {
+        //        DownloadId = model.DownloadId,
+        //        Title = model.Title,
+        //        FileName = model.FileName,
+        //        UploadedBy = model.UploadedBy,
+        //        UploadedOnUTC = DateTime.Now
+        //    };
+
+        //    await _documentService.InsertAsync(document);
+
+        //    ViewBag.RefreshPage = true;
+
+        //    if (!continueEditing)
+        //        return RedirectToAction("Configure");
+
+        //    return RedirectToAction("Edit", new { id = document.Id });
+        //}
+
         [HttpPost, ParameterBasedOnFormName("save-continue", "continueEditing")]
-        public async Task<IActionResult> Create(DocumentModel model, bool continueEditing)
+        public virtual async Task<IActionResult> Create(DocumentModel model, bool continueEditing)
+        {
+            if (ModelState.IsValid)
+            {
+                var document = model.ToEntity<Document>();
+                document.UploadedOnUTC = DateTime.UtcNow;
+                await _documentService.InsertAsync(document);
+
+                await _documentService.UpdateAsync(document);
+
+                if (!continueEditing)
+                    return RedirectToAction("~/Plugins/Widgets.BetterDocs/Views/Configure.cshtml");
+
+                return RedirectToAction("~/Plugins/Widgets.BetterDocs/Views/Edit.cshtml", new { id = document.Id });
+            }
+
+            //prepare model
+            model = await _documentModelFactory.PrepareDocumentModelAsync(model, null);
+
+            //if we got this far, something failed, redisplay form
+            return View("~/Plugins/Widgets.BetterDocs/Views/Create.cshtml", model);
+        }
+
+      
+        public virtual async Task<IActionResult> Edit(int id)
         {
 
-            var document = new Document
+            
+            var document = await _documentService.GetDocumentByIdAsync(id);
+            if (document == null)
+                return RedirectToAction("~/Plugins/Widgets.BetterDocs/Views/Configure.cshtml");
+
+            var model = await _documentModelFactory.PrepareDocumentModelAsync(null, document);
+
+            return View("~/Plugins/Widgets.BetterDocs/Views/Edit.cshtml", model);
+        }
+
+        [HttpPost, ParameterBasedOnFormName("save-continue", "continueEditing")]
+        public virtual async Task<IActionResult> Edit(DocumentModel model, bool continueEditing)
+        {
+
+            var document = await _documentService.GetDocumentByIdAsync(model.Id);
+            if (document == null)
+                return RedirectToAction("~/Plugins/Widgets.BetterDocs/Views/Configure.cshtml");
+
+            if (ModelState.IsValid)
             {
-                DownloadId = model.DownloadId,
-                Title = model.Title,
-                FileName = model.FileName,
-                UploadedBy = model.UploadedBy,
-                UploadedOnUTC = DateTime.Now
-            };
 
-            await _documentService.InsertAsync(document);
+                document = model.ToEntity(document);
+                await _documentService.UpdateAsync(document);
 
-            ViewBag.RefreshPage = true;
 
-            if (!continueEditing)
-                return RedirectToAction("Configure");
 
-            return RedirectToAction("Edit", new { id = document.Id });
+                if (!continueEditing)
+                    return RedirectToAction("~/Plugins/Widgets.BetterDocs/Views/Configure.cshtml");
+
+                return RedirectToAction("~/Plugins/Widgets.BetterDocs/Views/Edit.cshtml", new { id = document.Id });
+            }
+
+            model = await _documentModelFactory.PrepareDocumentModelAsync(model, document);
+
+            return View("~/Plugins/Widgets.BetterDocs/Views/Edit.cshtml", model);
+        }
+
+        [HttpPost]
+        public virtual async Task<IActionResult> Delete(int id)
+        {
+
+            var document = await _documentService.GetDocumentByIdAsync(id);
+            if (document == null)
+                return RedirectToAction("~/Plugins/Widgets.BetterDocs/Views/Configure.cshtml");
+
+            await _documentService.DeleteDocumentAsync(document);
+
+            
+
+            return RedirectToAction("~/Plugins/Widgets.BetterDocs/Views/Configure.cshtml");
         }
 
         [HttpPost]
@@ -146,7 +229,7 @@ namespace Wombit.Plugin.Widgets.BetterDocs.Controllers
             var document = await _documentService.GetDocumentByIdAsync(searchModel.DocumentId)
                 ?? throw new ArgumentException("No document found with the specified id");
 
-            var model = await _documentModelFactory.PrepareDocumentProductListModelAsync(searchModel, document);
+            var model = await _documentModelFactory.PrepareProductDocumentListModelAsync(searchModel, document);
 
             return Json(model);
         }
@@ -174,53 +257,44 @@ namespace Wombit.Plugin.Widgets.BetterDocs.Controllers
             return new NullJsonResult();
         }
 
-        /// <returns>A task that represents the asynchronous operation</returns>
         public virtual async Task<IActionResult> ProductAddPopup(int documentId)
         {
 
-            var model = await _documentModelFactory.PrepareAddProductToDocumentSearchModelAsync(new AddProductToCategorySearchModel());
+            var model = await _documentModelFactory.PrepareAddProductToDocumentSearchModelAsync(new AddProductToDocumentSearchModel());
 
-            return View(model);
+            return View("~/Plugins/Widgets.BetterDocs/Views/ProductAddPopup.cshtml", model);
         }
 
         [HttpPost]
-        /// <returns>A task that represents the asynchronous operation</returns>
-        public virtual async Task<IActionResult> ProductAddPopupList(AddProductToCategorySearchModel searchModel)
+        public virtual async Task<IActionResult> ProductAddPopupList(AddProductToDocumentSearchModel searchModel)
         {
-            if (!await _permissionService.AuthorizeAsync(StandardPermissionProvider.ManageCategories))
-                return await AccessDeniedDataTablesJson();
 
-            //prepare model
-            var model = await _categoryModelFactory.PrepareAddProductToCategoryListModelAsync(searchModel);
+            var model = await _documentModelFactory.PrepareAddProductToDocumentListModelAsync(searchModel);
 
             return Json(model);
         }
 
         [HttpPost]
         [FormValueRequired("save")]
-        /// <returns>A task that represents the asynchronous operation</returns>
-        public virtual async Task<IActionResult> ProductAddPopup(AddProductToCategoryModel model)
+        public virtual async Task<IActionResult> ProductAddPopup(AddProductToDocumentModel model)
         {
-            if (!await _permissionService.AuthorizeAsync(StandardPermissionProvider.ManageCategories))
-                return AccessDeniedView();
 
-            //get selected products
             var selectedProducts = await _productService.GetProductsByIdsAsync(model.SelectedProductIds.ToArray());
             if (selectedProducts.Any())
             {
-                var existingProductCategories = await _categoryService.GetProductCategoriesByCategoryIdAsync(model.CategoryId, showHidden: true);
+                var existingProductDocuments = await _documentService.GetProductDocumentsByDocumentIdAsync(model.DocumentId, showHidden: true);
                 foreach (var product in selectedProducts)
                 {
-                    //whether product category with such parameters already exists
-                    if (_categoryService.FindProductCategory(existingProductCategories, product.Id, model.CategoryId) != null)
+
+                    if (_documentService.FindProductDocument(existingProductDocuments, product.Id, model.DocumentId) != null)
                         continue;
 
-                    //insert the new product category mapping
-                    await _categoryService.InsertProductCategoryAsync(new ProductCategory
+
+                    await _documentService.InsertProductDocumentAsync(new ProductDocument
                     {
-                        CategoryId = model.CategoryId,
-                        ProductId = product.Id,
-                        IsFeaturedProduct = false,
+                        DocumentId = model.DocumentId,
+                        EntityId = product.Id,
+                        KeyGroup = "Product",
                         DisplayOrder = 1
                     });
                 }
@@ -228,7 +302,7 @@ namespace Wombit.Plugin.Widgets.BetterDocs.Controllers
 
             ViewBag.RefreshPage = true;
 
-            return View(new AddProductToCategorySearchModel());
+            return View("~/Plugins/Widgets.BetterDocs/Views/ProductAddPopup.cshtml", new AddProductToDocumentSearchModel());
         }
 
     }

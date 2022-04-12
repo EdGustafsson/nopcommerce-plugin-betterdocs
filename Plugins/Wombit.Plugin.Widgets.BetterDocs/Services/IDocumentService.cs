@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Wombit.Plugin.Widgets.BetterDocs.Domain;
 using Nop.Core;
+using Nop.Core.Domain.Catalog;
 
 namespace Wombit.Plugin.Widgets.BetterDocs.Services
 {
@@ -25,6 +26,8 @@ namespace Wombit.Plugin.Widgets.BetterDocs.Services
         Task<ProductDocument> GetProductDocumentByIdAsync(int productDocumentId);
         Task UpdateProductDocumentAsync(ProductDocument productDocument);
         Task DeleteProductDocumentAsync(ProductDocument productDocument);
+        ProductDocument FindProductDocument(IList<ProductDocument> existingProductDocuments, int productId, int documentId);
+        Task InsertProductDocumentAsync(ProductDocument productDocument);
     }
 }
 

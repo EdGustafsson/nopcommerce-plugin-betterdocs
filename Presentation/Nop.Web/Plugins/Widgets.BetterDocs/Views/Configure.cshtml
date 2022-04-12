@@ -123,14 +123,14 @@
                                     $.ajax({
                                         cache: false,
                                         type: "POST",
-                                        url: "@(Url.Action("DeleteSelected", "Documents"))",
+                                        url: "@(Url.Action("DeleteSelected", "BetterDocs"))",
                                         data: postData,
                                         error: function (jqXHR, textStatus, errorThrown) {
                                             $('#deleteSelectedFailed-info').text(errorThrown);
                                             $('#deleteSelectedFailed').click();
                                         },
                                         complete: function (jqXHR, textStatus) {
-                                            updateTable('#categories-grid');
+                                            updateTable('#documents-grid');
                                         }
                                     });
                                     $('#delete-selected-action-confirmation').modal('toggle');

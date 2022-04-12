@@ -21,8 +21,8 @@ namespace Wombit.Plugin.Widgets.BetterDocs.Models
         [NopResourceDisplayName("Wombit.Catalog.Products.List.SearchProductName")]
         public string SearchProductName { get; set; }
 
-        [NopResourceDisplayName("Wombit.Catalog.Products.List.SearchCategory")]
-        public int SearchDocumentId { get; set; }
+        [NopResourceDisplayName("Admin.Catalog.Products.List.SearchCategory")]
+        public int SearchCategoryId { get; set; }
 
         [NopResourceDisplayName("Wombit.Catalog.Products.List.SearchManufacturer")]
         public int SearchManufacturerId { get; set; }
