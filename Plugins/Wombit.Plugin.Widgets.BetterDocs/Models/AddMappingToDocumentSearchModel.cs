@@ -6,10 +6,10 @@ using Nop.Web.Framework.Mvc.ModelBinding;
 namespace Wombit.Plugin.Widgets.BetterDocs.Models
 {
 
-    public partial record AddProductToDocumentSearchModel : BaseSearchModel
+    public partial record AddMappingToDocumentSearchModel : BaseSearchModel
     {
 
-        public AddProductToDocumentSearchModel()
+        public AddMappingToDocumentSearchModel()
         {
             AvailableCategories = new List<SelectListItem>();
             AvailableManufacturers = new List<SelectListItem>();
@@ -18,22 +18,22 @@ namespace Wombit.Plugin.Widgets.BetterDocs.Models
             AvailableProductTypes = new List<SelectListItem>();
         }
 
-        [NopResourceDisplayName("Wombit.Catalog.Products.List.SearchProductName")]
+        [NopResourceDisplayName("Plugins.Widgets.BetterDocs.Admin.Fields.SearchProductName")]
         public string SearchProductName { get; set; }
 
-        [NopResourceDisplayName("Admin.Catalog.Products.List.SearchCategory")]
+        [NopResourceDisplayName("Plugins.Widgets.BetterDocs.Admin.Fields.SearchCategory")]
         public int SearchCategoryId { get; set; }
 
-        [NopResourceDisplayName("Wombit.Catalog.Products.List.SearchManufacturer")]
+        [NopResourceDisplayName("Plugins.Widgets.BetterDocs.Admin.Fields.SearchManufacturer")]
         public int SearchManufacturerId { get; set; }
 
-        [NopResourceDisplayName("Wombit.Catalog.Products.List.SearchStore")]
+        [NopResourceDisplayName("Plugins.Widgets.BetterDocs.Admin.Fields.SearchStore")]
         public int SearchStoreId { get; set; }
 
-        [NopResourceDisplayName("Wombit.Catalog.Products.List.SearchVendor")]
+        [NopResourceDisplayName("Plugins.Widgets.BetterDocs.Admin.Fields.SearchVendor")]
         public int SearchVendorId { get; set; }
 
-        [NopResourceDisplayName("Wombit.Catalog.Products.List.SearchProductType")]
+        [NopResourceDisplayName("Plugins.Widgets.BetterDocs.Admin.Fields.SearchProductType")]
         public int SearchProductTypeId { get; set; }
 
         public IList<SelectListItem> AvailableCategories { get; set; }

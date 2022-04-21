@@ -19,6 +19,7 @@ namespace Wombit.Plugin.Widgets.BetterDocs.Data
         public override void Up()
         {
             _migrationManager.BuildTable<Document>(Create);
+            _migrationManager.BuildTable<DocumentMapping>(Create);
         }
     }
 }

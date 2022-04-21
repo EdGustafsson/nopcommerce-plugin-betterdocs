@@ -24,6 +24,7 @@ namespace Wombit.Plugin.Widgets.BetterDocs.Infrastructure
         {
             services.AddScoped<IDocumentService, DocumentService>();
             services.AddScoped<IDocumentModelFactory, DocumentModelFactory>();
+            services.AddScoped<IDocumentFileService, DocumentFileService>();
         }
 
         public int Order => 99;

@@ -17,6 +17,8 @@ using Nop.Services.Discounts;
 using Nop.Services.Localization;
 using Nop.Services.Security;
 using Nop.Services.Stores;
+using System.Linq.Expressions;
+using System.Linq.Dynamic;
 
 namespace Wombit.Plugin.Widgets.BetterDocs.Services
 {
@@ -25,7 +27,7 @@ namespace Wombit.Plugin.Widgets.BetterDocs.Services
         private readonly IRepository<Document> _documentRepository;
         private readonly IEventPublisher _eventPublisher;
         private readonly IRepository<Product> _productRepository;
-        private readonly IRepository<ProductDocument> _productDocumentRepository;
+        private readonly IRepository<DocumentMapping> _documentMappingRepository;
         private readonly IStoreContext _storeContext;
         private readonly IStoreMappingService _storeMappingService;
 
@@ -34,14 +36,14 @@ namespace Wombit.Plugin.Widgets.BetterDocs.Services
             IRepository<Document> documentRepository,
             IEventPublisher eventPublisher,
             IRepository<Product> productRepository,
-            IRepository<ProductDocument> productDocumentRepository,
+            IRepository<DocumentMapping> documentMappingRepository,
             IStoreContext storeContext,
             IStoreMappingService storeMappingService)
         {
             _documentRepository = documentRepository;
             _eventPublisher = eventPublisher;
             _productRepository = productRepository;
-            _productDocumentRepository = productDocumentRepository;
+            _documentMappingRepository = documentMappingRepository;
             _storeContext = storeContext;
             _storeMappingService = storeMappingService;
         }
@@ -77,19 +79,16 @@ namespace Wombit.Plugin.Widgets.BetterDocs.Services
             await _eventPublisher.EntityDeletedAsync(document);
         }
 
-        public virtual async Task<Document> GetDocumentAsync(int id)
-        {
-            if (id == 0)
-                return null;
+        //public virtual async Task<Document> GetDocumentAsync(int id)
+        //{
+        //    if (id == 0)
+        //        return null;
 
-            return await _documentRepository.GetByIdAsync(id);
-        }
+        //    return await _documentRepository.GetByIdAsync(id);
+        //}
 
         public virtual async Task<IList<Document>> GetDocumentsAsync()
         {
-            // return await _repository.GetAllAsync();
-
-            // fix
 
             return await _documentRepository.GetAllAsync(query =>
             {
@@ -97,12 +96,12 @@ namespace Wombit.Plugin.Widgets.BetterDocs.Services
             });
         }
 
-        public virtual async Task<IPagedList<Document>> GetAllDocumentsAsync(int downloadId = 0, int pageIndex = 0, int pageSize = int.MaxValue)
+        public virtual async Task<IPagedList<Document>> GetAllDocumentsAsync(int id = 0, int pageIndex = 0, int pageSize = int.MaxValue)
         {
             var rez = await _documentRepository.GetAllAsync(query =>
             {
-                if (downloadId > 0)
-                    query = query.Where(point => point.DownloadId == downloadId || point.Id == 0);
+                if (id > 0)
+                    query = query.Where(point => point.Id == id || point.Id == 0);
                 query = query.OrderBy(point => point.DisplayOrder).ThenBy(point => point.Title);
 
                 return query;
@@ -111,9 +110,9 @@ namespace Wombit.Plugin.Widgets.BetterDocs.Services
             return new PagedList<Document>(rez, pageIndex, pageSize);
         }
 
-        public virtual async Task<Document> GetDocumentByIdAsync(int downloadId)
+        public virtual async Task<Document> GetDocumentByIdAsync(int id)
         {
-            return await _documentRepository.GetByIdAsync(downloadId);
+            return await _documentRepository.GetByIdAsync(id);
         }
 
         public virtual async Task<IList<Document>> GetDocumentsByIdsAsync(int[] documentIds)
@@ -121,7 +120,7 @@ namespace Wombit.Plugin.Widgets.BetterDocs.Services
             return await _documentRepository.GetByIdsAsync(documentIds, includeDeleted: false);
         }
 
-         public virtual async Task DeleteDocumentAsync(Document document)
+        public virtual async Task DeleteDocumentAsync(Document document)
         {
             await _documentRepository.DeleteAsync(document);
         }
@@ -135,82 +134,120 @@ namespace Wombit.Plugin.Widgets.BetterDocs.Services
                 await DeleteDocumentAsync(document);
         }
 
-        public virtual async Task<IPagedList<ProductDocument>> GetProductDocumentsByDocumentIdAsync(int documentId, int pageIndex = 0, int pageSize = int.MaxValue, bool showHidden = false)
+        public virtual async Task<IPagedList<DocumentMapping>> GetDocumentMappingsByDocumentIdAsync(int documentId, int pageIndex = 0, int pageSize = int.MaxValue, bool showHidden = false)
         {
             if (documentId == 0)
-                return new PagedList<ProductDocument>(new List<ProductDocument>(), pageIndex, pageSize);
+                return new PagedList<DocumentMapping>(new List<DocumentMapping>(), pageIndex, pageSize);
 
-            var query = from pd in _productDocumentRepository.Table
-                        join p in _productRepository.Table on pd.EntityId equals p.Id
-                        where pd.DocumentId == documentId && !p.Deleted
-                        orderby pd.DisplayOrder, pd.Id
-                        select pd;
+            var query = from dm in _documentMappingRepository.Table
+                        join p in _productRepository.Table on dm.EntityId equals p.Id
+                        where dm.DocumentId == documentId && !p.Deleted
+                        orderby dm.DisplayOrder, dm.Id
+                        select dm;
 
             if (!showHidden)
             {
-                var documentsQuery = _documentRepository.Table.Where(d => d.Published);
+                var documentsQuery = _documentRepository.Table.Where(d => d.Published); ;
 
-                ////apply store mapping constraints
-                //var store = await _storeContext.GetCurrentStoreAsync();
-                //documentsQuery = await _storeMappingService.ApplyStoreMapping(documentsQuery, store.Id);
-
-                ////apply ACL constraints
-                //var customer = await _workContext.GetCurrentCustomerAsync();
-                //categoriesQuery = await _aclService.ApplyAcl(documentsQuery, customer);
-
-                query = query.Where(pc => documentsQuery.Any(c => c.Id == pc.DocumentId));
+                query = query.Where(pc => documentsQuery.Any(d => d.Id == pc.DocumentId));
             }
 
             return await query.ToPagedListAsync(pageIndex, pageSize);
         }
 
-        public virtual async Task<ProductDocument> GetProductDocumentByIdAsync(int productDocumentId)
+        public virtual async Task<DocumentMapping> GetDocumentMappingByIdAsync(int documentMappingId)
         {
-            return await _productDocumentRepository.GetByIdAsync(productDocumentId, cache => default);
+            return await _documentMappingRepository.GetByIdAsync(documentMappingId, cache => default);
         }
 
-        public virtual async Task UpdateProductDocumentAsync(ProductDocument productDocument)
+        public virtual async Task UpdateDocumentMappingAsync(DocumentMapping documentMapping)
         {
-            await _productDocumentRepository.UpdateAsync(productDocument);
+            await _documentMappingRepository.UpdateAsync(documentMapping);
         }
 
-        public virtual async Task DeleteProductDocumentAsync(ProductDocument productDocument)
+        public virtual async Task DeleteDocumentMappingAsync(DocumentMapping documentMapping)
         {
-            await _productDocumentRepository.DeleteAsync(productDocument);
+            await _documentMappingRepository.DeleteAsync(documentMapping);
         }
 
-        public virtual ProductDocument FindProductDocument(IList<ProductDocument> source, int productId, int documentId)
+        public virtual DocumentMapping FindDocumentMapping(IList<DocumentMapping> source, int productId, int documentId)
         {
-            foreach (var productDocument in source)
-                if (productDocument.EntityId == productId && productDocument.DocumentId == documentId)
-                    return productDocument;
+            foreach (var documentMapping in source)
+                if (documentMapping.EntityId == productId && documentMapping.DocumentId == documentId)
+                    return documentMapping;
 
             return null;
         }
 
-        public virtual async Task InsertProductDocumentAsync(ProductDocument productDocument)
+        public virtual async Task InsertDocumentMappingAsync(DocumentMapping documentMapping)
         {
-            await _productDocumentRepository.InsertAsync(productDocument);
+            await _documentMappingRepository.InsertAsync(documentMapping);
         }
 
-
-        //public virtual async Task InsertStorePickupPointAsync(StorePickupPoint pickupPoint)
+        //public virtual async Task<IList<DocumentMapping>> GetDocumentMappingsByEntityId(int id)
         //{
-        //    await _storePickupPointRepository.InsertAsync(pickupPoint, false);
-        //    await _staticCacheManager.RemoveByPrefixAsync(PICKUP_POINT_PATTERN_KEY);
+        //    throw new NotImplementedException();
         //}
 
-        //public virtual async Task UpdateStorePickupPointAsync(StorePickupPoint pickupPoint)
-        //{
-        //    await _storePickupPointRepository.UpdateAsync(pickupPoint, false);
-        //    await _staticCacheManager.RemoveByPrefixAsync(PICKUP_POINT_PATTERN_KEY);
-        //}
 
-        //public virtual async Task DeleteStorePickupPointAsync(StorePickupPoint pickupPoint)
-        //{
-        //    await _storePickupPointRepository.DeleteAsync(pickupPoint, false);
-        //    await _staticCacheManager.RemoveByPrefixAsync(PICKUP_POINT_PATTERN_KEY);
-        //}
+        public virtual async Task<IList<DocumentMapping>> GetDocumentMappingsByEntityIdAsync(int entityId, string keyGroup)
+        {
+
+            //var query = from dm in _documentMappingRepository.Table
+            //            where dm.EntityId == entityId && !d.Deleted
+            //            orderby dm.DisplayOrder, dm.Id
+            //            select dm;
+
+            //var documentMappingQuery = _documentMappingRepository.Table; ;
+
+            //query = query.Where(pc => documentMappingQuery.Any(dm => dm.DocumentId == pc.DocumentId));
+
+
+            //return await query.ToPagedListAsync(pageIndex, pageSize);
+            if (entityId == 0)
+                return null;
+
+            return await _documentMappingRepository.Table.Where(x => x.EntityId == entityId && x.KeyGroup == keyGroup).ToListAsync();
+        }
+
+        public virtual async Task<IList<Document>> GetDocumentsByEntityId(int entityId, string keyGroup)
+        {
+
+            var documentMappings = await GetDocumentMappingsByEntityIdAsync(entityId, keyGroup);
+
+            //            select dm;
+
+            var documentIds = documentMappings.Select(dm => dm.DocumentId);
+
+            var documents = _documentRepository.Table.Where(d => documentIds.Contains(d.Id)).ToList();
+
+            //var documents = _documentRepository.Table.Where(d => d.Id == documentIds).ToList();
+
+            return documents;
+
+
+
+           
+            ////if(keyGroup == "Product")
+            ////{
+            //var query = from d in _documentRepository.Table
+            //            join dm in _documentMappingRepository.Table on d.Id equals dm.DocumentId
+            //            where dm.EntityId == entityId && dm.KeyGroup == "Product"
+            //            orderby dm.DisplayOrder, dm.Id
+
+
+            //}
+
+
+            //var documents = await _documentRepository.GetAllAsync(async query =>
+
+            //   query = query.Where(d => 
+
+
+
+
+            //)
+        }
     }
 }
 

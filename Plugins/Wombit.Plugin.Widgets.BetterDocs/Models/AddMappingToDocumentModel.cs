@@ -4,10 +4,10 @@ using Nop.Web.Framework.Models;
 namespace Wombit.Plugin.Widgets.BetterDocs.Models
 {
 
-    public partial record AddProductToDocumentModel : BaseNopModel
+    public partial record AddMappingToDocumentModel : BaseNopModel
     {
 
-        public AddProductToDocumentModel()
+        public AddMappingToDocumentModel()
         {
             SelectedProductIds = new List<int>();
         }

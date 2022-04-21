@@ -3,7 +3,7 @@ using Nop.Web.Areas.Admin.Models.Catalog;
 
 namespace Wombit.Plugin.Widgets.BetterDocs.Models
 {
-    public partial record AddProductToDocumentListModel : BasePagedListModel<ProductModel>
+    public partial record AddMappingToDocumentListModel : BasePagedListModel<ProductModel>
     {
     }
 }

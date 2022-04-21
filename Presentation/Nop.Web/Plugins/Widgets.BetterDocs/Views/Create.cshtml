@@ -28,17 +28,17 @@
 
 @model DocumentModel
 @{
-    ViewBag.PageTitle = T("Admin.Common.AddNew").Text;
+    ViewBag.PageTitle = T("Plugins.Widgets.BetterDocs.Admin.Fields.Documents.AddNew").Text;
     Html.SetActiveMenuItemSystemName("Documents");
 }
 
 <form asp-controller="BetterDocs" asp-action="Create" method="post" id="document-form">
     <div class="content-header clearfix">
         <h1 class="float-left">
-            @T("Admin.Common.AddNew")
+            @T("Plugins.Widgets.BetterDocs.Admin.Fields.Documents.AddNew")
             <small>
                 <i class="fas fa-arrow-circle-left"></i>
-                <a asp-action="Configure">@T("Wombit.Document.BackToList")</a>
+                <a asp-action="Configure">@T("Plugins.Widgets.BetterDocs.Admin.Fields.BackToList")</a>
             </small>
         </h1>
         <div class="float-right">

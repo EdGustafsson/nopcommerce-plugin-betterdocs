@@ -20,44 +20,42 @@ namespace Wombit.Plugin.Widgets.BetterDocs.Models
 
             Locales = new List<DocumentLocalizedModel>();
           
-
-            ProductDocumentSearchModel = new ProductDocumentSearchModel();
+            DocumentMappingSearchModel = new DocumentMappingSearchModel();
         }
 
-        [UIHint("Download")]
-        [NopResourceDisplayName("Wombit.Document.Fields.DownloadId")]
-        public int DownloadId { get; set; }
-        public Guid DownloadGuid { get; set; }
-
-        [NopResourceDisplayName("Wombit.Document.Fields.Title")]
+        [NopResourceDisplayName("Plugins.Widgets.BetterDocs.Admin.Fields.Title.Input")]
         public string Title { get; set; }
 
-        [NopResourceDisplayName("Wombit.Document.Fields.FileName")]
-        public string FileName { get; set; }
+        [NopResourceDisplayName("Plugins.Widgets.BetterDocs.Admin.Fields.FileName.Input")]
+        public string SeoFilename { get; set; }
 
-        [NopResourceDisplayName("Wombit.Document.Fields.DisplayOrder")]
+        [NopResourceDisplayName("Plugins.Widgets.BetterDocs.Admin.Fields.DisplayOrder")]
         public int DisplayOrder { get; set; }
+        [NopResourceDisplayName("Plugins.Widgets.BetterDocs.Admin.Fields.ContentType")]
+        public string ContentType { get; set; }
+        [NopResourceDisplayName("Plugins.Widgets.BetterDocs.Admin.Fields.MimeType")]
+        public string MimeType { get; set; }
 
-        [NopResourceDisplayName("Wombit.Document.Fields.UploadedOnUTC")]
+        [NopResourceDisplayName("Plugins.Widgets.BetterDocs.Admin.Fields.UploadedOnUTC")]
         public DateTime UploadedOnUTC { get; set; }
 
-        [NopResourceDisplayName("Wombit.Document.Fields.UploadedBy")]
+        [NopResourceDisplayName("Plugins.Widgets.BetterDocs.Admin.Fields.UploadedBy")]
         public string UploadedBy { get; set; }
-        public ProductDocumentSearchModel ProductDocumentSearchModel { get; set; }
+        public DocumentMappingSearchModel DocumentMappingSearchModel { get; set; }
 
 
-        [NopResourceDisplayName("Admin.Catalog.Categories.Fields.PageSize")]
+        [NopResourceDisplayName("Plugins.Widgets.BetterDocs.Admin.Fields.PageSize")]
         public int PageSize { get; set; }
-        [NopResourceDisplayName("Admin.Catalog.Categories.Fields.AllowCustomersToSelectPageSize")]
+        [NopResourceDisplayName("Plugins.Widgets.BetterDocs.Admin.Fields.AllowCustomersToSelectPageSize")]
         public bool AllowCustomersToSelectPageSize { get; set; }
 
-        [NopResourceDisplayName("Admin.Catalog.Categories.Fields.PageSizeOptions")]
+        [NopResourceDisplayName("Plugins.Widgets.BetterDocs.Admin.Fields.PageSizeOptions")]
         public string PageSizeOptions { get; set; }
 
-        [NopResourceDisplayName("Admin.Catalog.Categories.Fields.Published")]
+        [NopResourceDisplayName("Plugins.Widgets.BetterDocs.Admin.Fields.Published")]
         public bool Published { get; set; }
         public IList<DocumentLocalizedModel> Locales { get; set; }
-        [NopResourceDisplayName("Admin.Catalog.Categories.Fields.IncludeInTopMenu")]
+        [NopResourceDisplayName("Plugins.Widgets.BetterDocs.Admin.Fields.FileIncludeInTopMenuName")]
         public bool IncludeInTopMenu { get; set; }
     }
 
@@ -66,23 +64,23 @@ namespace Wombit.Plugin.Widgets.BetterDocs.Models
         public int LanguageId { get; set; }
 
         [UIHint("Download")]
-        [NopResourceDisplayName("Wombit.Document.Fields.DownloadId")]
+        [NopResourceDisplayName("Plugins.Widgets.BetterDocs.Admin.Fields.DownloadId")]
         public int DownloadId { get; set; }
         public Guid DownloadGuid { get; set; }
 
-        [NopResourceDisplayName("Wombit.Document.Fields.Title")]
+        [NopResourceDisplayName("Plugins.Widgets.BetterDocs.Admin.Fields.Title")]
         public string Title { get; set; }
 
-        [NopResourceDisplayName("Wombit.Document.Fields.FileName")]
+        [NopResourceDisplayName("Plugins.Widgets.BetterDocs.Admin.Fields.FileName")]
         public string FileName { get; set; }
 
-        [NopResourceDisplayName("Wombit.Document.Fields.DisplayOrder")]
+        [NopResourceDisplayName("Plugins.Widgets.BetterDocs.Admin.Fields.DisplayOrder")]
         public int DisplayOrder { get; set; }
 
-        [NopResourceDisplayName("Wombit.Document.Fields.UploadedOnUTC")]
+        [NopResourceDisplayName("Plugins.Widgets.BetterDocs.Admin.Fields.UploadedOnUTC")]
         public DateTime UploadedOnUTC { get; set; }
 
-        [NopResourceDisplayName("Wombit.Document.Fields.UploadedBy")]
+        [NopResourceDisplayName("Plugins.Widgets.BetterDocs.Admin.Fields.UploadedBy")]
         public string UploadedBy { get; set; }
     }
 }

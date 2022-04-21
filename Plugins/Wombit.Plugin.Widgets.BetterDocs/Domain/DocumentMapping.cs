@@ -3,7 +3,7 @@ using System;
 
 namespace Wombit.Plugin.Widgets.BetterDocs.Domain
 {
-    public partial class ProductDocument : BaseEntity
+    public partial class DocumentMapping : BaseEntity
     {
         public int DocumentId  { get; set; }
         public int EntityId { get; set; }

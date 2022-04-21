@@ -9,6 +9,19 @@ using Nop.Web.Framework.Models.Extensions;
 using Wombit.Plugin.Widgets.BetterDocs.Domain;
 using Nop.Services.Catalog;
 using Nop.Web.Areas.Admin.Infrastructure.Mapper.Extensions;
+using System.Collections.Generic;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using Nop.Core.Domain.Catalog;
+using Nop.Core.Domain.Directory;
+using Nop.Core.Domain.Discounts;
+using Nop.Services.Directory;
+using Nop.Services.Discounts;
+using Nop.Services.Seo;
+using Nop.Web.Areas.Admin.Models.Catalog;
+using Nop.Web.Framework.Extensions;
+using Nop.Web.Framework.Factories;
+using Nop.Web.Areas.Admin.Factories;
+using Nop.Services.Media;
 
 namespace Wombit.Plugin.Widgets.BetterDocs.Factories
 {
@@ -20,17 +33,28 @@ namespace Wombit.Plugin.Widgets.BetterDocs.Factories
         private readonly ILocalizationService _localizationService;
         private readonly IStoreService _storeService;
         private readonly IProductService _productService;
+        private readonly IUrlRecordService _urlRecordService;
+        private readonly IBaseAdminModelFactory _baseAdminModelFactory;
+        private readonly IDownloadService _downloadService;
 
         public DocumentModelFactory(IDocumentService documentService,
-            ILocalizationService localizationService, IStoreService storeService, IProductService productService)
+            ILocalizationService localizationService, 
+            IStoreService storeService, 
+            IProductService productService, 
+            IUrlRecordService urlRecordService, 
+            IBaseAdminModelFactory baseAdminModelFactory,
+            IDownloadService downloadService)
         {
             _documentService = documentService;
             _localizationService = localizationService;
             _storeService = storeService;
             _productService = productService;
+            _urlRecordService = urlRecordService;
+            _baseAdminModelFactory = baseAdminModelFactory;
+            _downloadService = downloadService;
         }
 
-        protected virtual ProductDocumentSearchModel PrepareProductDocumentSearchModel(ProductDocumentSearchModel searchModel, Document document)
+        protected virtual DocumentMappingSearchModel PrepareDocumentMappingSearchModel(DocumentMappingSearchModel searchModel, Document document)
         {
             if (searchModel == null)
                 throw new ArgumentNullException(nameof(searchModel));
@@ -45,8 +69,6 @@ namespace Wombit.Plugin.Widgets.BetterDocs.Factories
             return searchModel;
         }
 
-
-
         public async Task<DocumentListModel> PrepareDocumentListModelAsync(DocumentSearchModel searchModel)
         {
             var documents = await _documentService.GetAllDocumentsAsync(pageIndex: searchModel.Page - 1,
@@ -55,13 +77,15 @@ namespace Wombit.Plugin.Widgets.BetterDocs.Factories
             {
                 return documents.SelectAwait(async doc =>
                 {
-                    var document = await _documentService.GetDocumentByIdAsync(doc.DownloadId);
+                    var document = await _documentService.GetDocumentByIdAsync(doc.Id);
 
                     return new DocumentModel
                     {
                         Id = doc.Id,
                         Title = doc.Title,
-                        FileName = doc.FileName,
+                        SeoFilename = doc.SeoFilename,
+                        MimeType = doc.MimeType,
+                        ContentType = doc.ContentType,
                         DisplayOrder = doc.DisplayOrder,
                         UploadedOnUTC = doc.UploadedOnUTC,
                         UploadedBy = doc.UploadedBy
@@ -73,19 +97,16 @@ namespace Wombit.Plugin.Widgets.BetterDocs.Factories
             return model;
         }
 
-
-
         public Task<DocumentSearchModel> PrepareDocumentSearchModelAsync(DocumentSearchModel searchModel)
         {
             if (searchModel == null)
                 throw new ArgumentNullException(nameof(searchModel));
 
-            //prepare page parameters
             searchModel.SetGridPageSize();
 
             return Task.FromResult(searchModel);
         }
-        public virtual async Task<ProductDocumentListModel> PrepareProductDocumentListModelAsync(ProductDocumentSearchModel searchModel, Document document)
+        public virtual async Task<DocumentMappingListModel> PrepareDocumentMappingListModelAsync(DocumentMappingSearchModel searchModel, Document document)
         {
 
             if (searchModel == null)
@@ -95,18 +116,18 @@ namespace Wombit.Plugin.Widgets.BetterDocs.Factories
                 throw new ArgumentNullException(nameof(document));
 
 
-            var productDocuments = await _documentService.GetProductDocumentsByDocumentIdAsync(document.Id,
+            var documentMappings = await _documentService.GetDocumentMappingsByDocumentIdAsync(document.Id,
                 showHidden: true,
                 pageIndex: searchModel.Page - 1, pageSize: searchModel.PageSize);
 
 
-            var model = await new ProductDocumentListModel().PrepareToGridAsync(searchModel, productDocuments, () =>
+            var model = await new DocumentMappingListModel().PrepareToGridAsync(searchModel, documentMappings, () =>
             {
-                return productDocuments.SelectAwait(async productDocument =>
+                return documentMappings.SelectAwait(async documentMapping =>
                 {
-                    var documentProductModel = productDocument.ToModel<ProductDocumentModel>();
+                    var documentProductModel = documentMapping.ToModel<DocumentMappingModel>();
 
-                    documentProductModel.ProductName = (await _productService.GetProductByIdAsync(productDocument.EntityId))?.Name;
+                    documentProductModel.ProductName = (await _productService.GetProductByIdAsync(documentMapping.EntityId))?.Name;
 
                     return documentProductModel;
                 });
@@ -115,25 +136,25 @@ namespace Wombit.Plugin.Widgets.BetterDocs.Factories
             return model;
         }
 
-        public virtual async Task<AddProductToDocumentSearchModel> PrepareAddProductToDocumentSearchModelAsync(AddProductToDocumentSearchModel searchModel)
+        public virtual async Task<AddMappingToDocumentSearchModel> PrepareAddProductToDocumentSearchModelAsync(AddMappingToDocumentSearchModel searchModel)
         {
             if (searchModel == null)
                 throw new ArgumentNullException(nameof(searchModel));
 
-            ////prepare available categories
-            //await _baseAdminModelFactory.PrepareCategoriesAsync(searchModel.AvailableCategories);
+            //prepare available categories
+            await _baseAdminModelFactory.PrepareCategoriesAsync(searchModel.AvailableCategories);
 
-            ////prepare available manufacturers
-            //await _baseAdminModelFactory.PrepareManufacturersAsync(searchModel.AvailableManufacturers);
+            //prepare available manufacturers
+            await _baseAdminModelFactory.PrepareManufacturersAsync(searchModel.AvailableManufacturers);
 
-            ////prepare available stores
-            //await _baseAdminModelFactory.PrepareStoresAsync(searchModel.AvailableStores);
+            //prepare available stores
+            await _baseAdminModelFactory.PrepareStoresAsync(searchModel.AvailableStores);
 
-            ////prepare available vendors
-            //await _baseAdminModelFactory.PrepareVendorsAsync(searchModel.AvailableVendors);
+            //prepare available vendors
+            await _baseAdminModelFactory.PrepareVendorsAsync(searchModel.AvailableVendors);
 
-            ////prepare available product types
-            //await _baseAdminModelFactory.PrepareProductTypesAsync(searchModel.AvailableProductTypes);
+            //prepare available product types
+            await _baseAdminModelFactory.PrepareProductTypesAsync(searchModel.AvailableProductTypes);
 
             //prepare page parameters
             searchModel.SetPopupGridPageSize();
@@ -141,30 +162,33 @@ namespace Wombit.Plugin.Widgets.BetterDocs.Factories
             return searchModel;
         }
 
-        public virtual async Task<AddProductToDocumentSearchModel> PrepareAddProductToDocumentListModelAsync(AddProductToDocumentSearchModel searchModel)
+        public virtual async Task<AddMappingToDocumentListModel> PrepareAddProductToDocumentListModelAsync(AddMappingToDocumentSearchModel searchModel)
         {
             if (searchModel == null)
                 throw new ArgumentNullException(nameof(searchModel));
 
-            ////prepare available categories
-            //await _baseAdminModelFactory.PrepareCategoriesAsync(searchModel.AvailableCategories);
+            var products = await _productService.SearchProductsAsync(showHidden: true,
+                categoryIds: new List<int> { searchModel.SearchCategoryId },
+                manufacturerIds: new List<int> { searchModel.SearchManufacturerId },
+                storeId: searchModel.SearchStoreId,
+                vendorId: searchModel.SearchVendorId,
+                productType: searchModel.SearchProductTypeId > 0 ? (ProductType?)searchModel.SearchProductTypeId : null,
+                keywords: searchModel.SearchProductName,
+                pageIndex: searchModel.Page - 1, pageSize: searchModel.PageSize);
 
-            ////prepare available manufacturers
-            //await _baseAdminModelFactory.PrepareManufacturersAsync(searchModel.AvailableManufacturers);
+            var model = await new AddMappingToDocumentListModel().PrepareToGridAsync(searchModel, products, () =>
+            {
+                return products.SelectAwait(async product =>
+                {
+                    var productModel = product.ToModel<ProductModel>();
 
-            ////prepare available stores
-            //await _baseAdminModelFactory.PrepareStoresAsync(searchModel.AvailableStores);
+                    productModel.SeName = await _urlRecordService.GetSeNameAsync(product, 0, true, false);
 
-            ////prepare available vendors
-            //await _baseAdminModelFactory.PrepareVendorsAsync(searchModel.AvailableVendors);
+                    return productModel;
+                });
+            });
 
-            ////prepare available product types
-            //await _baseAdminModelFactory.PrepareProductTypesAsync(searchModel.AvailableProductTypes);
-
-            //prepare page parameters
-            searchModel.SetPopupGridPageSize();
-
-            return searchModel;
+            return model;
         }
 
         public virtual async Task<DocumentModel> PrepareDocumentModelAsync(DocumentModel documentModel, Document document)
@@ -173,50 +197,14 @@ namespace Wombit.Plugin.Widgets.BetterDocs.Factories
 
             if (document != null)
             {
-                //fill in model values from the entity
                 if (documentModel == null)
                 {
                     documentModel = document.ToModel<DocumentModel>();
                 }
 
-                //prepare nested search model
-                PrepareProductDocumentSearchModel(documentModel.ProductDocumentSearchModel, document);
-
-            
+                PrepareDocumentMappingSearchModel(documentModel.DocumentMappingSearchModel, document);
+  
             }
-
-            //set default values for the new model
-            //if (document == null)
-            //{
-            //    documentModel.PageSize = _catalogSettings.DefaultCategoryPageSize;
-            //    documentModel.PageSizeOptions = _catalogSettings.DefaultCategoryPageSizeOptions;
-            //    documentModel.Published = true;
-            //    documentModel.IncludeInTopMenu = true;
-            //    documentModel.AllowCustomersToSelectPageSize = true;
-            //}
-
-            //model.PrimaryStoreCurrencyCode = (await _currencyService.GetCurrencyByIdAsync(_currencySettings.PrimaryStoreCurrencyId)).CurrencyCode;
-
-            ////prepare localized models
-            //if (!excludeProperties)
-            //    model.Locales = await _localizedModelFactory.PrepareLocalizedModelsAsync(localizedModelConfiguration);
-
-            ////prepare available category templates
-            //await _baseAdminModelFactory.PrepareCategoryTemplatesAsync(model.AvailableCategoryTemplates, false);
-
-            ////prepare available parent categories
-            //await _baseAdminModelFactory.PrepareCategoriesAsync(model.AvailableCategories,
-            //    defaultItemText: await _localizationService.GetResourceAsync("Admin.Catalog.Categories.Fields.Parent.None"));
-
-            ////prepare model discounts
-            //var availableDiscounts = await _discountService.GetAllDiscountsAsync(DiscountType.AssignedToCategories, showHidden: true);
-            //await _discountSupportedModelFactory.PrepareModelDiscountsAsync(model, category, availableDiscounts, excludeProperties);
-
-            ////prepare model customer roles
-            //await _aclSupportedModelFactory.PrepareModelCustomerRolesAsync(model, category, excludeProperties);
-
-            ////prepare model stores
-            //await _storeMappingSupportedModelFactory.PrepareModelStoresAsync(model, category, excludeProperties);
 
             return documentModel;
         }

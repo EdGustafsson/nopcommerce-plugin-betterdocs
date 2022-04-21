@@ -1,9 +1,10 @@
-﻿@model AddProductToDocumentSearchModel
+﻿@model AddMappingToDocumentSearchModel
 
 @{
-    Layout = "_AdminPopupLayout";
+    Layout = "~/Areas/Admin/Views/Shared/_AdminPopupLayout.cshtml";
 
-    ViewBag.PageTitle = T("Admin.Common.AddNew").Text;
+    ViewBag.PageTitle = T("Plugins.Widgets.BetterDocs.Admin.Fields.Products.AddNew").Text;
+
 }
 
 @if (ViewBag.RefreshPage == true)
@@ -22,7 +23,7 @@ else
           asp-route-formId="@Context.Request.Query["formId"]">
         <div class="content-header clearfix">
             <h1 class="float-left">
-                @T("Admin.Common.AddNew")
+                @T("Plugins.Widgets.BetterDocs.Admin.Fields.Products.AddNew")
             </h1>
             <div class="float-right">
                 &nbsp;
@@ -111,7 +112,7 @@ else
                                     Filters = new List<FilterParameter>
                                     {
                                         new FilterParameter(nameof(Model.SearchProductName)),
-                                        new FilterParameter(nameof(Model.SearchDocumentId)),
+                                        new FilterParameter(nameof(Model.SearchCategoryId)),
                                         new FilterParameter(nameof(Model.SearchManufacturerId)),
                                         new FilterParameter(nameof(Model.SearchStoreId)),
                                         new FilterParameter(nameof(Model.SearchVendorId)),
@@ -122,7 +123,7 @@ else
                                         new ColumnProperty(nameof(ProductModel.Id))
                                         {
                                             IsMasterCheckBox = true,
-                                            Render = new RenderCheckBox(nameof(AddProductToDocumentModel.SelectedProductIds)),
+                                            Render = new RenderCheckBox(nameof(AddMappingToDocumentModel.SelectedProductIds)),
                                             ClassName = NopColumnClassDefaults.CenterAll,
                                             Width = "50"
                                         },

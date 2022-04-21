@@ -53,13 +53,13 @@
 @{
    
     Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
-    ViewBag.PageTitle = T("Wombit.Admin.Documents").Text;
+    ViewBag.PageTitle = T("Plugins.Widgets.BetterDocs.Admin.Fields.BetterDocs").Text;
     Html.SetActiveMenuItemSystemName("Documents");
 }
 
 <div class="content-header clearfix">
     <h1 class="float-left">
-        @T("Wombit.Admin.Documents")
+        @T("Plugins.Widgets.BetterDocs.Admin.Fields.BetterDocs")
     </h1>
     <div class="float-right">
         <a asp-action="Create" class="btn btn-primary">
@@ -80,7 +80,7 @@
             <div class="cards-group">
                 <div class="card card-default">
                     <div class="card-body">
-                        <nop-doc-reference asp-string-resource="@T("Wombit.Documentation.Reference.Documents")" />
+                        <nop-doc-reference asp-string-resource="@T("Plugins.Widgets.BetterDocs.Admin.Fields.Documents")" />
 
                         @await Html.PartialAsync("Table", new DataTablesModel
                         {
@@ -99,7 +99,7 @@
                         },
                         new ColumnProperty(nameof(DocumentModel.Title))
                         {
-                        Title = T("Wombit.Document.Fields.Title").Text,
+                        Title = T("Plugins.Widgets.BetterDocs.Admin.Fields.Title").Text,
                         Width = "200"
                         },
                         new ColumnProperty(nameof(DocumentModel.Id))

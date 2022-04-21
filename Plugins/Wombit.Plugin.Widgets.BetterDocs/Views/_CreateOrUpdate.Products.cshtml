@@ -6,40 +6,40 @@
         @await Html.PartialAsync("Table", new DataTablesModel
         {
             Name = "products-grid",
-            UrlRead = new DataUrl("ProductList", "BetterDocs", new RouteValueDictionary { [nameof(Model.ProductDocumentSearchModel.DocumentId)] = Model.ProductDocumentSearchModel.DocumentId }),
+            UrlRead = new DataUrl("ProductList", "BetterDocs", new RouteValueDictionary { [nameof(Model.DocumentMappingSearchModel.DocumentId)] = Model.DocumentMappingSearchModel.DocumentId }),
             UrlDelete = new DataUrl("ProductDelete", "BetterDocs", null),
             UrlUpdate = new DataUrl("ProductUpdate", "BetterDocs", null),
-            Length = Model.ProductDocumentSearchModel.PageSize,
-            LengthMenu = Model.ProductDocumentSearchModel.AvailablePageSizes,
+            Length = Model.DocumentMappingSearchModel.PageSize,
+            LengthMenu = Model.DocumentMappingSearchModel.AvailablePageSizes,
             ColumnCollection = new List<ColumnProperty>
                 {
-                    new ColumnProperty(nameof(ProductDocumentModel.ProductName))
+                    new ColumnProperty(nameof(DocumentMappingModel.ProductName))
                     {
-                        Title = T("Wombit.Document.Fields.ProductName").Text
+                        Title = T("Admin.Catalog.Products.Fields.Name").Text
                     },
-                    new ColumnProperty(nameof(ProductDocumentModel.DisplayOrder))
+                    new ColumnProperty(nameof(DocumentMappingModel.DisplayOrder))
                     {
-                        Title = T("Wombit.Document.Fields.DisplayOrder").Text,
+                        Title = T("Admin.Catalog.Products.Fields.DisplayOrder").Text,
                         Width = "150",
                         ClassName = NopColumnClassDefaults.CenterAll,
                         Editable = true,
                         EditType = EditType.Number
                     },
-                    new ColumnProperty(nameof(ProductDocumentModel.EntityId))
+                    new ColumnProperty(nameof(DocumentMappingModel.EntityId))
                     {
                         Title = T("Admin.Common.View").Text,
                         Width = "150",
                         ClassName = NopColumnClassDefaults.Button,
-                        Render = new RenderButtonView(new DataUrl("~/Admin/Product/Edit/", nameof(ProductDocumentModel.EntityId)))
+                        Render = new RenderButtonView(new DataUrl("~/Admin/Product/Edit/", nameof(DocumentMappingModel.EntityId)))
                     },
-                    new ColumnProperty(nameof(ProductDocumentModel.Id))
+                    new ColumnProperty(nameof(DocumentMappingModel.Id))
                     {
                         Title = T("Admin.Common.Edit").Text,
                         Width = "200",
                         ClassName =  NopColumnClassDefaults.Button,
                         Render = new RenderButtonsInlineEdit()
                     },
-                    new ColumnProperty(nameof(ProductDocumentModel.Id))
+                    new ColumnProperty(nameof(DocumentMappingModel.Id))
                     {
                         Title = T("Admin.Common.Delete").Text,
                         Width = "100",
@@ -70,7 +70,7 @@
 else
 {
     <div class="card-body">
-        @T("Wombit.Plugin.Fields.SaveBeforeEdit")
+        @T("Plugins.Widgets.BetterDocs.Admin.Fields.SaveBeforeEdit")
     </div>
 }
 

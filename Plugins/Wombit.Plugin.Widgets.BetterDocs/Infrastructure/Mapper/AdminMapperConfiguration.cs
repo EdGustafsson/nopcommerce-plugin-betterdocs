@@ -13,8 +13,8 @@ namespace Wombit.Plugin.Widgets.Documents.Infrastructure.Mapper
         {
             CreateMap<Document, DocumentModel>();
             CreateMap<DocumentModel, Document>();
-            CreateMap<ProductDocumentModel, ProductDocument>();
-            CreateMap<ProductDocument, ProductDocumentModel>();
+            CreateMap<DocumentMappingModel, DocumentMapping>();
+            CreateMap<DocumentMapping, DocumentMappingModel>();
         }
 
 

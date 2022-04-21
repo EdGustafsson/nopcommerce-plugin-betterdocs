@@ -14,7 +14,7 @@ using Nop.Web.Framework;
 
 namespace Wombit.Plugin.Widgets.BetterDocs
 {
-    public class BetterDocsPlugin : BasePlugin, IAdminMenuPlugin
+    public class BetterDocsPlugin : BasePlugin, IAdminMenuPlugin, IWidgetPlugin
     {
       
 
@@ -37,6 +37,22 @@ namespace Wombit.Plugin.Widgets.BetterDocs
             _webHelper = webHelper;
         }
 
+        public bool HideInWidgetList => false;
+
+        public string GetWidgetViewComponentName(string widgetZone)
+        {
+               
+                return "WidgetsBetterDocs";
+        }
+
+        public async Task<IList<string>> GetWidgetZonesAsync()
+        {
+            return await Task.FromResult(new List<string> {
+                AdminWidgetZones.ProductDetailsBlock,
+                "ProductDetailsAfterProductSpecification"
+            });
+        }
+
         public Task ManageSiteMapAsync(SiteMapNode rootNode)
         {
             var menuItem = new SiteMapNode()
@@ -57,7 +73,42 @@ namespace Wombit.Plugin.Widgets.BetterDocs
 
             return Task.CompletedTask;
         }
+        public override async Task InstallAsync()
+        {
 
+            await _localizationService.AddLocaleResourceAsync(new Dictionary<string, string>
+            {
+                ["Plugins.Widgets.BetterDocs.Admin.Fields.FileName"] = "File Name",
+                ["Plugins.Widgets.BetterDocs.Admin.Fields.Title"] = "Title",
+                ["Plugins.Widgets.BetterDocs.Admin.Fields.DownloadId"] = "Upload File",
+                ["Plugins.Widgets.BetterDocs.Admin.Fields.Title"] = "Title",
+                ["Plugins.Widgets.BetterDocs.Admin.Fields.Documents"] = "Documents",
+                ["Plugins.Widgets.BetterDocs.Admin.Fields.Documents.Info"] = "Document Info",
+                ["Plugins.Widgets.BetterDocs.Admin.Fields.Documents.Products"] = "Products",
+                ["Plugins.Widgets.BetterDocs.Admin.Fields.FileName.Input"] = "File Name: ",
+                ["Plugins.Widgets.BetterDocs.Admin.Fields.DownloadId.Input"] = "Upload File: ",
+                ["Plugins.Widgets.BetterDocs.Admin.Fields.Title.Input"] = "Title: ",
+                ["Plugins.Widgets.BetterDocs.Admin.Fields.ProductName"] = "Product Name",
+                ["Plugins.Widgets.BetterDocs.Admin.Fields.SearchProductName"] = "Search product name:",
+                ["Plugins.Widgets.BetterDocs.Admin.Fields.SearchProductType"] = "Search product type",
+                ["Plugins.Widgets.BetterDocs.Admin.Fields.Documents.AddNew"] = "Add new document",
+                ["Plugins.Widgets.BetterDocs.Admin.Fields.BackToList"] = "Back to list",
+                ["Plugins.Widgets.BetterDocs.Admin.Fields.Documents.Edit"] = "Edit document details",
+                ["Plugins.Widgets.BetterDocs.Admin.Fields.Products.AddNew"] = "Add new product",
+                ["Plugins.Widgets.BetterDocs.Admin.Fields.BetterDocs"] = "BetterDocs",
+                ["Plugins.Widgets.BetterDocs.Admin.Fields.SaveBeforeEdit"] = "Please save document before adding products"
+
+            });
+
+            await base.InstallAsync();
+        }
+
+        public override async Task UninstallAsync()
+        {
+            await _localizationService.DeleteLocaleResourcesAsync("Plugins.Widgets.BetterDocs");
+
+            await base.UninstallAsync();
+        }
 
         //public bool HideInWidgetList => false;
 

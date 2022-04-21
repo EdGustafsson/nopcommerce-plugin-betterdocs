@@ -10,9 +10,9 @@ namespace Wombit.Plugin.Widgets.BetterDocs.Factories
         
         Task<DocumentListModel> PrepareDocumentListModelAsync(DocumentSearchModel searchModel);
         Task<DocumentSearchModel> PrepareDocumentSearchModelAsync(DocumentSearchModel searchModel);
-        Task<ProductDocumentListModel> PrepareProductDocumentListModelAsync(ProductDocumentSearchModel searchModel, Document document);
-        Task<AddProductToDocumentSearchModel> PrepareAddProductToDocumentSearchModelAsync(AddProductToDocumentSearchModel addProductToDocumentSearchModel);
-        Task<AddProductToDocumentSearchModel> PrepareAddProductToDocumentListModelAsync(AddProductToDocumentSearchModel searchModel);
+        Task<DocumentMappingListModel> PrepareDocumentMappingListModelAsync(DocumentMappingSearchModel searchModel, Document document);
+        Task<AddMappingToDocumentSearchModel> PrepareAddProductToDocumentSearchModelAsync(AddMappingToDocumentSearchModel addProductToDocumentSearchModel);
+        Task<AddMappingToDocumentListModel> PrepareAddProductToDocumentListModelAsync(AddMappingToDocumentSearchModel searchModel);
         Task<DocumentModel> PrepareDocumentModelAsync(DocumentModel documentModel, Document document);
     }
 }
