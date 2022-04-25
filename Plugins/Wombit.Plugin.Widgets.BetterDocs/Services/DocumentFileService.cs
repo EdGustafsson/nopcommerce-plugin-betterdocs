@@ -23,12 +23,14 @@ namespace Wombit.Plugin.Widgets.BetterDocs.Services
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly MediaSettings _mediaSettings;
         private readonly IWebHelper _webHelper;
+        private readonly IDocumentService _documentService;
         public DocumentFileService(INopFileProvider fileProvider,
             IRepository<Document> documentRepository,
             IDownloadService downloadService,
             IHttpContextAccessor httpContextAccessor,
             MediaSettings mediaSettings,
-            IWebHelper webHelper)
+            IWebHelper webHelper,
+            IDocumentService documentService)
         {
             _fileProvider = fileProvider;
             _documentRepository = documentRepository;
@@ -36,6 +38,7 @@ namespace Wombit.Plugin.Widgets.BetterDocs.Services
             _httpContextAccessor = httpContextAccessor;
             _mediaSettings = mediaSettings;
             _webHelper = webHelper;
+            _documentService = documentService;
         }
 
         //public virtual async Task<string> GetDocumentUrlAsync(int documentId)
@@ -159,6 +162,35 @@ namespace Wombit.Plugin.Widgets.BetterDocs.Services
         {
             return Task.FromResult(_fileProvider.GetAbsolutePath("images", fileName));
         }
+
+        public virtual async Task<Document> UpdateDocumentAsync(int documentId, byte[] documentBinary, string mimeType,
+         string seoFilename, string title = null)
+        {
+            mimeType = CommonHelper.EnsureNotNull(mimeType);
+            mimeType = CommonHelper.EnsureMaximumLength(mimeType, 20);
+
+            seoFilename = CommonHelper.EnsureMaximumLength(seoFilename, 100);
+
+            var document = await _documentService.GetDocumentByIdAsync(documentId);
+            if (document == null)
+                return null;
+
+            ////delete old thumbs if a picture has been changed
+            //if (seoFilename != picture.SeoFilename)
+            //    await DeletePictureThumbsAsync(picture);
+
+            document.MimeType = mimeType;
+            document.SeoFilename = seoFilename;
+            document.Title = title;
+
+            await _documentRepository.UpdateAsync(document);
+
+            await SaveDocumentInFileAsync(document.Id, documentBinary, mimeType);
+
+            return document;
+        }
+
+
 
         //public virtual async Task<(string Url, Document Picture)> GetPictureUrlAsync(Document document)
         //{
@@ -303,6 +335,15 @@ namespace Wombit.Plugin.Widgets.BetterDocs.Services
             //}
 
             return Task.FromResult(lastPart);
+        }
+
+        public virtual async Task<byte[]> LoadDocumentBinaryAsync(Document document)
+        {
+            if (document == null)
+                throw new ArgumentNullException(nameof(document));
+
+
+            return await LoadPictureFromFileAsync(document.Id, document.MimeType); ;
         }
     }
 }

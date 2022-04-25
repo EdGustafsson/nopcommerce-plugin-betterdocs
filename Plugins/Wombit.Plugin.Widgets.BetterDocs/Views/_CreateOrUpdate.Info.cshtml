@@ -7,142 +7,142 @@
 @using Nop.Web.Framework.UI;
 
 @*<div class="card-body">
-        <div>
-            <div class="form-group row">
-                <div class="col-md-3">
-                    <nop-label asp-for="@Model.Locales[item].Title" />
-                </div>
-                <div class="col-md-9">
-                    <nop-editor asp-for="@Model.Locales[item].Title" />
-                    <span asp-validation-for="@Model.Locales[item].Title"></span>
-                </div>
-            </div>
-            <div class="form-group row">
-                <div class="col-md-3">
-                    <nop-label asp-for="@Model.Locales[item].DisplayOrder" />
-                </div>
-                <div class="col-md-9">
-                    <nop-editor asp-for="@Model.Locales[item].DisplayOrder" asp-template="RichEditor" />
-                    <span asp-validation-for="@Model.Locales[item].DisplayOrder"></span>
-                </div>
-            </div>
-            <input type="hidden" asp-for="@Model.Locales[item].LanguageId" />
-        </div>        
-        <div>
-            
-                            <div class="form-group row">
-                                <div class="col-md-3">
-                                    <nop-label asp-for="Title" />
-                                </div>
-                                <div class="col-md-9">
-                                    <nop-editor asp-for="Title" />
-                                    <span asp-validation-for="Title"></span>
-                                </div>
-                            </div>
-
-                            <div class="form-group row">
-                                <div class="col-md-3">
-                                    <nop-label asp-for="FileName" />
-                                </div>
-                                <div class="col-md-9">
-                                    <nop-editor asp-for="FileName" />
-                                    <span asp-validation-for="FileName"></span>
-                                </div>
-                            </div>
-
-                             <div class="form-group row">
-                                <div class="col-md-3">
-                                    <nop-label asp-for="DownloadId" />
-                                </div>
-                                <div class="col-md-9">
-                                    <nop-editor asp-for="DownloadId" />
-                                    <span asp-validation-for="DownloadId"></span>
-                                </div>
-                            </div>
-</div>
-
-@model Wombit.Plugin.Widgets.BetterDocs.Models.DocumentModel
-
-<div asp-validation-summary="All"></div>
-<input asp-for="Id" type="hidden" />
-
-<div class="content">
-    <div class="form-horizontal">
-        <div class="cards-group">
-            <div class="card card-default card-popup">
-                        <div class="card-body">
-                            <div class="form-group row">
-                                <div class="col-md-3">
-                                    <nop-label asp-for="DownloadId" />
-                                </div>
-                                <div class="col-md-9">
-                                    <nop-editor asp-for="DownloadId" />
-                                    <span asp-validation-for="DownloadId"></span>
-                                </div>
-                            </div>
-                            <div class="form-group row">
-                                <div class="col-md-3">
-                                    <nop-label asp-for="DisplayOrder" />
-                                </div>
-                                <div class="col-md-9">
-                                    <nop-editor asp-for="DisplayOrder" />
-                                    <span asp-validation-for="DisplayOrder"></span>
-                                </div>
-                            </div>
-                            <div class="form-group row">
-                                <div class="col-md-3">
-                                    <nop-label asp-for="Title" />
-                                </div>
-                                <div class="col-md-9">
-                                    <nop-editor asp-for="Title" />
-                                    <span asp-validation-for="Title"></span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+    <div>
+    <div class="form-group row">
+    <div class="col-md-3">
+    <nop-label asp-for="@Model.Locales[item].Title" />
     </div>
-</div>
+    <div class="col-md-9">
+    <nop-editor asp-for="@Model.Locales[item].Title" />
+    <span asp-validation-for="@Model.Locales[item].Title"></span>
+    </div>
+    </div>
+    <div class="form-group row">
+    <div class="col-md-3">
+    <nop-label asp-for="@Model.Locales[item].DisplayOrder" />
+    </div>
+    <div class="col-md-9">
+    <nop-editor asp-for="@Model.Locales[item].DisplayOrder" asp-template="RichEditor" />
+    <span asp-validation-for="@Model.Locales[item].DisplayOrder"></span>
+    </div>
+    </div>
+    <input type="hidden" asp-for="@Model.Locales[item].LanguageId" />
+    </div>
+    <div>
 
-    
-        <div>
-            
-                            <div class="form-group row">
-                                <div class="col-md-3">
-                                    <nop-label asp-for="Title" />
-                                </div>
-                                <div class="col-md-9">
-                                    <nop-editor asp-for="Title" />
-                                    <span asp-validation-for="Title"></span>
-                                </div>
-                            </div>
+    <div class="form-group row">
+    <div class="col-md-3">
+    <nop-label asp-for="Title" />
+    </div>
+    <div class="col-md-9">
+    <nop-editor asp-for="Title" />
+    <span asp-validation-for="Title"></span>
+    </div>
+    </div>
 
-                            <div class="form-group row">
-                                <div class="col-md-3">
-                                    <nop-label asp-for="FileName" />
-                                </div>
-                                <div class="col-md-9">
-                                    <nop-editor asp-for="FileName" />
-                                    <span asp-validation-for="FileName"></span>
-                                </div>
-                            </div>
+    <div class="form-group row">
+    <div class="col-md-3">
+    <nop-label asp-for="FileName" />
+    </div>
+    <div class="col-md-9">
+    <nop-editor asp-for="FileName" />
+    <span asp-validation-for="FileName"></span>
+    </div>
+    </div>
 
-                             <div class="form-group row">
-                                <div class="col-md-3">
-                                    <nop-label asp-for="DownloadId" />
-                                </div>
-                                <div class="col-md-9">
-                                    <nop-editor asp-for="DownloadId" />
-                                    <span asp-validation-for="DownloadId"></span>
-                                </div>
-                            </div>
-</div>*@
+    <div class="form-group row">
+    <div class="col-md-3">
+    <nop-label asp-for="DownloadId" />
+    </div>
+    <div class="col-md-9">
+    <nop-editor asp-for="DownloadId" />
+    <span asp-validation-for="DownloadId"></span>
+    </div>
+    </div>
+    </div>
+
+    @model Wombit.Plugin.Widgets.BetterDocs.Models.DocumentModel
+
+    <div asp-validation-summary="All"></div>
+    <input asp-for="Id" type="hidden" />
+
+    <div class="content">
+    <div class="form-horizontal">
+    <div class="cards-group">
+    <div class="card card-default card-popup">
+    <div class="card-body">
+    <div class="form-group row">
+    <div class="col-md-3">
+    <nop-label asp-for="DownloadId" />
+    </div>
+    <div class="col-md-9">
+    <nop-editor asp-for="DownloadId" />
+    <span asp-validation-for="DownloadId"></span>
+    </div>
+    </div>
+    <div class="form-group row">
+    <div class="col-md-3">
+    <nop-label asp-for="DisplayOrder" />
+    </div>
+    <div class="col-md-9">
+    <nop-editor asp-for="DisplayOrder" />
+    <span asp-validation-for="DisplayOrder"></span>
+    </div>
+    </div>
+    <div class="form-group row">
+    <div class="col-md-3">
+    <nop-label asp-for="Title" />
+    </div>
+    <div class="col-md-9">
+    <nop-editor asp-for="Title" />
+    <span asp-validation-for="Title"></span>
+    </div>
+    </div>
+    </div>
+    </div>
+    </div>
+    </div>
+    </div>
+
+
+    <div>
+
+    <div class="form-group row">
+    <div class="col-md-3">
+    <nop-label asp-for="Title" />
+    </div>
+    <div class="col-md-9">
+    <nop-editor asp-for="Title" />
+    <span asp-validation-for="Title"></span>
+    </div>
+    </div>
+
+    <div class="form-group row">
+    <div class="col-md-3">
+    <nop-label asp-for="FileName" />
+    </div>
+    <div class="col-md-9">
+    <nop-editor asp-for="FileName" />
+    <span asp-validation-for="FileName"></span>
+    </div>
+    </div>
+
+    <div class="form-group row">
+    <div class="col-md-3">
+    <nop-label asp-for="DownloadId" />
+    </div>
+    <div class="col-md-9">
+    <nop-editor asp-for="DownloadId" />
+    <span asp-validation-for="DownloadId"></span>
+    </div>
+    </div>
+    </div>*@
 
 
 @model Wombit.Plugin.Widgets.BetterDocs.Models.DocumentModel
 
 @*<div asp-validation-summary="All"></div>
-<input asp-for="Id" type="hidden" />*@
+    <input asp-for="Id" type="hidden" />*@
 
 
 @{
@@ -259,5 +259,16 @@
                 </div>
             </div>
         </div>
+
+        <div class="form-group row">
+            <div class="col-md-3">
+                <nop-label asp-for="Title" />
+            </div>
+            <div class="col-md-9">
+                <nop-editor asp-for="Title" />
+                <span asp-validation-for="Title"></span>
+            </div>
+        </div>
+
     </div>
 </div>

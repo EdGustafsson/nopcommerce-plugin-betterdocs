@@ -106,6 +106,32 @@ namespace Wombit.Plugin.Widgets.BetterDocs.Controllers
             return View("~/Plugins/Widgets.BetterDocs/Views/Create.cshtml", model);
         }
 
+        //[HttpPost, ParameterBasedOnFormName("save-continue", "continueEditing")]
+        //public virtual async Task<IActionResult> Create(DocumentModel model, bool continueEditing)
+        //{
+        //    if (ModelState.IsValid)
+        //    {
+        //        var document = model.ToEntity<Document>();
+
+        //        document.UploadedOnUTC = DateTime.UtcNow;
+        //        document.UploadedBy = _workContext.GetCurrentCustomerAsync().Result.Username;
+        //        document.DisplayOrder = 1;
+
+        //        await _documentService.InsertAsync(document);
+
+        //        await _documentService.UpdateAsync(document);
+
+        //        if (!continueEditing)
+        //            return RedirectToAction("Configure");
+
+        //        return RedirectToAction("Edit", new { id = document.Id });
+        //    }
+
+        //    model = await _documentModelFactory.PrepareDocumentModelAsync(model, null);
+
+        //    return View("~/Plugins/Widgets.BetterDocs/Views/Create.cshtml", model);
+        //}
+
         [HttpPost, ParameterBasedOnFormName("save-continue", "continueEditing")]
         public virtual async Task<IActionResult> Create(DocumentModel model, bool continueEditing)
         {
@@ -117,9 +143,18 @@ namespace Wombit.Plugin.Widgets.BetterDocs.Controllers
                 document.UploadedBy = _workContext.GetCurrentCustomerAsync().Result.Username;
                 document.DisplayOrder = 1;
 
-                await _documentService.InsertAsync(document);
+                //await _documentService.InsertAsync(document);
 
-                await _documentService.UpdateAsync(document);
+                //await _documentService.UpdateAsync(document);
+
+                await _documentFileService.UpdateDocumentAsync(document.Id,
+                await _documentFileService.LoadDocumentBinaryAsync(document),
+                     picture.MimeType,
+                    picture.SeoFilename,
+                     overrideAltAttribute,
+                    overrideTitleAttribute);
+
+                // fixa först ^^ 
 
                 if (!continueEditing)
                     return RedirectToAction("Configure");
@@ -130,9 +165,16 @@ namespace Wombit.Plugin.Widgets.BetterDocs.Controllers
             model = await _documentModelFactory.PrepareDocumentModelAsync(model, null);
 
             return View("~/Plugins/Widgets.BetterDocs/Views/Create.cshtml", model);
+
+
+            //try to get a picture with the specified id
+            
+
+         
+
         }
 
-      
+
         public virtual async Task<IActionResult> Edit(int id)
         {
 
