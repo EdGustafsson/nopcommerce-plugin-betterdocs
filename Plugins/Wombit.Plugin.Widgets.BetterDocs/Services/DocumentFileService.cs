@@ -128,6 +128,7 @@ namespace Wombit.Plugin.Widgets.BetterDocs.Services
             return Task.FromResult(_fileProvider.GetAbsolutePath("images", fileName));
         }
 
+
         public virtual async Task<Document> UpdateDocumentAsync(Document document, byte[] documentBinary)
         {
             if (document == null)
@@ -149,19 +150,16 @@ namespace Wombit.Plugin.Widgets.BetterDocs.Services
             return document;
         }
 
-        public virtual async Task<byte[]> LoadPictureFromFileAsync(int documentId, string mimeType)
+        public virtual async Task<byte[]> LoadDocumentFromFileAsync(int documentId, string mimeType)
         {
             var lastPart = await GetFileExtensionFromMimeTypeAsync(mimeType);
             var fileName = $"{documentId:0000000}_0.{lastPart}";
-            var filePath = await GetPictureLocalPathAsync(fileName);
+            var filePath = await GetDocumentLocalPathAsync(fileName);
 
             return await _fileProvider.ReadAllBytesAsync(filePath);
         }
 
-        protected virtual Task<string> GetPictureLocalPathAsync(string fileName)
-        {
-            return Task.FromResult(_fileProvider.GetAbsolutePath("images", fileName));
-        }
+       
 
         public virtual async Task<Document> UpdateDocumentAsync(int documentId, byte[] documentBinary, string mimeType,
          string seoFilename, string title = null)
@@ -343,7 +341,7 @@ namespace Wombit.Plugin.Widgets.BetterDocs.Services
                 throw new ArgumentNullException(nameof(document));
 
 
-            return await LoadPictureFromFileAsync(document.Id, document.MimeType); ;
+            return await LoadDocumentFromFileAsync(document.Id, document.MimeType); ;
         }
     }
 }

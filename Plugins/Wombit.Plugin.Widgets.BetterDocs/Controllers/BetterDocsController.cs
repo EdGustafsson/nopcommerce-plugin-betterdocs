@@ -149,12 +149,9 @@ namespace Wombit.Plugin.Widgets.BetterDocs.Controllers
 
                 await _documentFileService.UpdateDocumentAsync(document.Id,
                 await _documentFileService.LoadDocumentBinaryAsync(document),
-                     picture.MimeType,
-                    picture.SeoFilename,
-                     overrideAltAttribute,
-                    overrideTitleAttribute);
+                     document.MimeType,
+                    document.SeoFilename);
 
-                // fixa först ^^ 
 
                 if (!continueEditing)
                     return RedirectToAction("Configure");
@@ -202,6 +199,11 @@ namespace Wombit.Plugin.Widgets.BetterDocs.Controllers
                 document = model.ToEntity(document);
                 await _documentService.UpdateAsync(document);
 
+
+                await _documentFileService.UpdateDocumentAsync(document.Id,
+                await _documentFileService.LoadDocumentBinaryAsync(document),
+                     document.MimeType,
+                    document.SeoFilename);
 
                 if (!continueEditing)
                     return RedirectToAction("Configure");
@@ -384,7 +386,7 @@ namespace Wombit.Plugin.Widgets.BetterDocs.Controllers
             //if (document.DownloadBinary == null)
             //    return Content($"Download data is not available any more. Download GD={download.Id}");
 
-            var documentBinary = await _documentFileService.LoadPictureFromFileAsync(id, document.MimeType);
+            var documentBinary = await _documentFileService.LoadDocumentFromFileAsync(id, document.MimeType);
 
             var fileName = !string.IsNullOrWhiteSpace(document.SeoFilename) ? document.SeoFilename : document.Id.ToString();
             var contentType = !string.IsNullOrWhiteSpace(document.ContentType)
@@ -396,48 +398,46 @@ namespace Wombit.Plugin.Widgets.BetterDocs.Controllers
             };
         }
 
-        public virtual async Task<IActionResult> AsyncUpdate(int pictureId, int displayOrder,
-            string overrideAltAttribute, string overrideTitleAttribute, int productId)
-        {
-            if (!await _permissionService.AuthorizeAsync(StandardPermissionProvider.ManageProducts))
-                return AccessDeniedView();
+        //public virtual async Task<IActionResult> AsyncUpdate(int documentId, int displayOrder,
+        //    string overrideAltAttribute, string overrideTitleAttribute, int productId)
+        //{
+        //    if (!await _permissionService.AuthorizeAsync(StandardPermissionProvider.ManageProducts))
+        //        return AccessDeniedView();
 
-            if (pictureId == 0)
-                throw new ArgumentException();
+        //    if (documentId == 0)
+        //        throw new ArgumentException();
 
-            //try to get a product with the specified id
-            var product = await _productService.GetProductByIdAsync(productId)
-                ?? throw new ArgumentException("No product found with the specified id");
+        //    //try to get a product with the specified id
+        //    var product = await _productService.GetProductByIdAsync(productId)
+        //        ?? throw new ArgumentException("No product found with the specified id");
 
-            //a vendor should have access only to his products
-            if (await _workContext.GetCurrentVendorAsync() != null && product.VendorId != (await _workContext.GetCurrentVendorAsync()).Id)
-                return RedirectToAction("List");
+        //    //a vendor should have access only to his products
+        //    if (await _workContext.GetCurrentVendorAsync() != null && product.VendorId != (await _workContext.GetCurrentVendorAsync()).Id)
+        //        return RedirectToAction("List");
 
-            if ((await _productService.GetProductPicturesByProductIdAsync(productId)).Any(p => p.PictureId == pictureId))
-                return Json(new { Result = false });
+        //    if ((await _productService.GetProductPicturesByProductIdAsync(productId)).Any(p => p.PictureId == pictureId))
+        //        return Json(new { Result = false });
 
-            //try to get a picture with the specified id
-            var picture = await _pictureService.GetPictureByIdAsync(pictureId)
-                ?? throw new ArgumentException("No picture found with the specified id");
+        //    //try to get a picture with the specified id
+        //    var document = await _documentService.GetDocumentByIdAsync(documentId)
+        //        ?? throw new ArgumentException("No document found with the specified id");
 
-            await _pictureService.UpdatePictureAsync(picture.Id,
-                await _pictureService.LoadPictureBinaryAsync(picture),
-                picture.MimeType,
-                picture.SeoFilename,
-                overrideAltAttribute,
-                overrideTitleAttribute);
+        //    await _documentFileService.UpdateDocumentAsync(document.Id,
+        //        await _documentFileService.LoadDocumentBinaryAsync(document),
+        //        document.MimeType,
+        //        document.SeoFilename);
 
-            await _pictureService.SetSeoFilenameAsync(pictureId, await _pictureService.GetPictureSeNameAsync(product.Name));
+        //    //await _pictureService.SetSeoFilenameAsync(pictureId, await _pictureService.GetPictureSeNameAsync(product.Name));
 
-            await _productService.InsertProductPictureAsync(new ProductPicture
-            {
-                PictureId = pictureId,
-                ProductId = productId,
-                DisplayOrder = displayOrder
-            });
+        //    //await _productService.InsertProductPictureAsync(new ProductPicture
+        //    //{
+        //    //    PictureId = pictureId,
+        //    //    ProductId = productId,
+        //    //    DisplayOrder = displayOrder
+        //    //});
 
-            return Json(new { Result = true });
-        }
+        //    return Json(new { Result = true });
+        //}
 
 
 
