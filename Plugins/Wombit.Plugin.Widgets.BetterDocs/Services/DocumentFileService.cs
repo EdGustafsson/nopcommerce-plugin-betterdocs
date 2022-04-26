@@ -162,7 +162,7 @@ namespace Wombit.Plugin.Widgets.BetterDocs.Services
        
 
         public virtual async Task<Document> UpdateDocumentAsync(int documentId, byte[] documentBinary, string mimeType,
-         string seoFilename, string title = null)
+         string seoFilename, string title)
         {
             mimeType = CommonHelper.EnsureNotNull(mimeType);
             mimeType = CommonHelper.EnsureMaximumLength(mimeType, 20);
@@ -342,6 +342,35 @@ namespace Wombit.Plugin.Widgets.BetterDocs.Services
 
 
             return await LoadDocumentFromFileAsync(document.Id, document.MimeType); ;
+        }
+
+        public virtual async Task<Document> UpdateDocumentAsync(int documentId, byte[] documentBinary, string mimeType, string seoFilename, string title, DateTime uploadedOnUTC, string uploadedBy, int displayOrder)
+        {
+            mimeType = CommonHelper.EnsureNotNull(mimeType);
+            mimeType = CommonHelper.EnsureMaximumLength(mimeType, 20);
+
+            seoFilename = CommonHelper.EnsureMaximumLength(seoFilename, 100);
+
+            var document = await _documentService.GetDocumentByIdAsync(documentId);
+            if (document == null)
+                return null;
+
+            ////delete old thumbs if a picture has been changed
+            //if (seoFilename != picture.SeoFilename)
+            //    await DeletePictureThumbsAsync(picture);
+
+            document.MimeType = mimeType;
+            document.SeoFilename = seoFilename;
+            document.Title = title;
+            document.UploadedOnUTC = uploadedOnUTC;
+            document.UploadedBy = uploadedBy;
+            document.DisplayOrder = displayOrder;
+
+            await _documentRepository.UpdateAsync(document);
+
+            await SaveDocumentInFileAsync(document.Id, documentBinary, mimeType);
+
+            return document;
         }
     }
 }

@@ -16,8 +16,10 @@ namespace Wombit.Plugin.Widgets.BetterDocs.Services
         //Task<(string Url, Document Document)> GetDocumentUrlAsync(Document document);
         Task<byte[]> LoadDocumentFromFileAsync(int documentId, string extension);
         Task<Document> UpdateDocumentAsync(int documentId, byte[] documentBinary, string mimeType,
-        string seoFilename, string title = null);
+        string seoFilename, string title);
 
         Task<byte[]> LoadDocumentBinaryAsync(Document document);
+        Task<Document> UpdateDocumentAsync(int documentId, byte[] documentBinary, string mimeType,
+        string seoFilename, string title, DateTime uploadedOnUTC, string uploadedBy, int displayOrder);
     }
 }

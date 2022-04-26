@@ -137,11 +137,16 @@ namespace Wombit.Plugin.Widgets.BetterDocs.Controllers
         {
             if (ModelState.IsValid)
             {
+
+               // var document = await _documentService.GetDocumentByIdAsync(model.Id)
+               //?? throw new ArgumentException("No picture found with the specified id");
+
                 var document = model.ToEntity<Document>();
 
                 document.UploadedOnUTC = DateTime.UtcNow;
                 document.UploadedBy = _workContext.GetCurrentCustomerAsync().Result.Username;
                 document.DisplayOrder = 1;
+                document.Title = model.Title;
 
                 //await _documentService.InsertAsync(document);
 
@@ -149,8 +154,12 @@ namespace Wombit.Plugin.Widgets.BetterDocs.Controllers
 
                 await _documentFileService.UpdateDocumentAsync(document.Id,
                 await _documentFileService.LoadDocumentBinaryAsync(document),
-                     document.MimeType,
-                    document.SeoFilename);
+                    document.MimeType,
+                    document.SeoFilename,
+                    document.Title, 
+                    document.UploadedOnUTC,
+                    document.UploadedBy,
+                    document.DisplayOrder);
 
 
                 if (!continueEditing)
@@ -196,14 +205,15 @@ namespace Wombit.Plugin.Widgets.BetterDocs.Controllers
             if (ModelState.IsValid)
             {
 
-                document = model.ToEntity(document);
-                await _documentService.UpdateAsync(document);
+                //document = model.ToEntity(document);
+                //await _documentService.UpdateAsync(document);
 
 
                 await _documentFileService.UpdateDocumentAsync(document.Id,
                 await _documentFileService.LoadDocumentBinaryAsync(document),
-                     document.MimeType,
-                    document.SeoFilename);
+                    document.MimeType,
+                    document.SeoFilename,
+                    model.Title);
 
                 if (!continueEditing)
                     return RedirectToAction("Configure");
