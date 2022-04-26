@@ -236,6 +236,10 @@
                             $("#@(clientId) .qq-upload-list-selector").empty();
                             $(this).hide();
                         });
+
+
+
+
                     });
 
                 </script>
@@ -259,16 +263,25 @@
                 </div>
             </div>
         </div>
-
-        <div class="form-group row">
+       @* <div class="form-group row">
             <div class="col-md-3">
-                <nop-label asp-for="Title" />
+                <nop-label asp-for="Id" />
             </div>
             <div class="col-md-9">
-                <nop-editor asp-for="Title" />
-                <span asp-validation-for="Title"></span>
+                <nop-editor asp-for="Id" />
+                <span asp-validation-for="Id"></span>
             </div>
-        </div>
-
+        </div>*@
     </div>
+    <div class="form-group row">
+        <div class="col-md-3">
+            <nop-label asp-for="Title" />
+        </div>
+        <div class="col-md-9">
+            <nop-editor asp-for="Title" />
+            <span asp-validation-for="Title"></span>
+        </div>
+    </div>
+
+</div>
 </div>

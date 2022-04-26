@@ -133,20 +133,21 @@ namespace Wombit.Plugin.Widgets.BetterDocs.Controllers
         //}
 
         [HttpPost, ParameterBasedOnFormName("save-continue", "continueEditing")]
-        public virtual async Task<IActionResult> Create(DocumentModel model, bool continueEditing)
+        public virtual async Task<IActionResult> Create(int id, string title, bool continueEditing)
         {
+
+            var document = await _documentService.GetDocumentByIdAsync(documentId)
+               ?? throw new ArgumentException("No document found with the specified id");
+
             if (ModelState.IsValid)
             {
 
-               // var document = await _documentService.GetDocumentByIdAsync(model.Id)
-               //?? throw new ArgumentException("No picture found with the specified id");
-
-                var document = model.ToEntity<Document>();
+                //var document = model.ToEntity<Document>();
 
                 document.UploadedOnUTC = DateTime.UtcNow;
                 document.UploadedBy = _workContext.GetCurrentCustomerAsync().Result.Username;
                 document.DisplayOrder = 1;
-                document.Title = model.Title;
+                document.Title = title;
 
                 //await _documentService.InsertAsync(document);
 
@@ -167,6 +168,8 @@ namespace Wombit.Plugin.Widgets.BetterDocs.Controllers
 
                 return RedirectToAction("Edit", new { id = document.Id });
             }
+
+            var model = await _documentModelFactory.PrepareDocumentModelAsync(null, document);
 
             model = await _documentModelFactory.PrepareDocumentModelAsync(model, null);
 
