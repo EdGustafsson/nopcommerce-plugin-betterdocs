@@ -136,7 +136,7 @@ namespace Wombit.Plugin.Widgets.BetterDocs.Controllers
         public virtual async Task<IActionResult> Create(int id, string title, bool continueEditing)
         {
 
-            var document = await _documentService.GetDocumentByIdAsync(documentId)
+            var document = await _documentService.GetDocumentByIdAsync(id)
                ?? throw new ArgumentException("No document found with the specified id");
 
             if (ModelState.IsValid)

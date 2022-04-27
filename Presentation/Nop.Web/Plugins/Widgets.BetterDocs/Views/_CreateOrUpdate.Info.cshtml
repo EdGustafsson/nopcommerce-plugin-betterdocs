@@ -154,13 +154,18 @@
     var randomNumber = CommonHelper.GenerateRandomInteger();
     var clientId = "download" + randomNumber;
     var Document = await documentService.GetDocumentByIdAsync(Model.Id);
+    //var documentId = CommonHelper.GenerateRandomInteger();
+    var documentId = 5;
 }
 
 
 
-<div id="@(clientId + "value")">
+@*<div id="@(clientId + "value")">
     <input type="hidden" asp-for="Id" />
-</div>
+</div>*@
+
+@*<input id="@(documentId)" name="@(documentId)" asp-for='Id' type="hidden" value="@(documentId)" />*@
+<input asp-for='Id' type="hidden" value="@(documentId)" />
 
 <div class="card card-default">
     <div class="card-body">
@@ -225,7 +230,7 @@
                             multiple: false
                         }).on("complete", function (event, id, name, responseJSON, xhr) {
                             $("#@(clientId + "downloadurl")").html("<a class='btn btn-default ml-1' href='" + responseJSON.downloadUrl + "'><i class='fas fa-download'></i>@T("Admin.Download.DownloadUploadedFile")</a>");
-                            $("#@(clientId + "value") input").val(responseJSON.id);
+                            $("#@(documentId)").val(responseJSON.documentId);
                             $("#@(clientId + "remove")").show();
                         });
 
@@ -236,6 +241,10 @@
                             $("#@(clientId) .qq-upload-list-selector").empty();
                             $(this).hide();
                         });
+
+
+
+
                     });
 
                 </script>
@@ -259,7 +268,7 @@
                 </div>
             </div>
         </div>
-        <div class="form-group row">
+       @* <div class="form-group row">
             <div class="col-md-3">
                 <nop-label asp-for="Id" />
             </div>
@@ -267,7 +276,7 @@
                 <nop-editor asp-for="Id" />
                 <span asp-validation-for="Id"></span>
             </div>
-        </div>
+        </div>*@
     </div>
     <div class="form-group row">
         <div class="col-md-3">
@@ -279,5 +288,4 @@
         </div>
     </div>
 
-</div>
 </div>
