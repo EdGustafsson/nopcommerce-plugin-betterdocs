@@ -92,6 +92,8 @@ namespace Wombit.Plugin.Widgets.BetterDocs.Services
 
             return await _documentRepository.GetAllAsync(query =>
             {
+                query = query.Where(point => point.Title != null);
+
                 return query.OrderBy(t => t.DisplayOrder);
             });
         }
@@ -102,7 +104,7 @@ namespace Wombit.Plugin.Widgets.BetterDocs.Services
             {
                 if (id > 0)
                     query = query.Where(point => point.Id == id || point.Id == 0);
-                query = query.OrderBy(point => point.DisplayOrder).ThenBy(point => point.Title);
+                query = query.OrderBy(point => point.DisplayOrder).ThenBy(point => point.Title).Where(point => point.Title != null);
 
                 return query;
             });

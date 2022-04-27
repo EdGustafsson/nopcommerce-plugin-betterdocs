@@ -155,7 +155,7 @@
     var clientId = "download" + randomNumber;
     var Document = await documentService.GetDocumentByIdAsync(Model.Id);
     //var documentId = CommonHelper.GenerateRandomInteger();
-    var documentId = 5;
+    //var documentId = 5;
 }
 
 
@@ -165,7 +165,10 @@
 </div>*@
 
 @*<input id="@(documentId)" name="@(documentId)" asp-for='Id' type="hidden" value="@(documentId)" />*@
-<input asp-for='Id' type="hidden" value="@(documentId)" />
+
+<input asp-for='Id' type="hidden" id="Id" name="Id" value=5/>
+
+@*<nop-editor asp-for='Id' type="hidden" id="Id" name="Id" value=5/>*@
 
 <div class="card card-default">
     <div class="card-body">
@@ -219,6 +222,8 @@
                     </div>
                 </script>
 
+              
+
                 <script>
 
                     $(document).ready(function () {
@@ -230,8 +235,9 @@
                             multiple: false
                         }).on("complete", function (event, id, name, responseJSON, xhr) {
                             $("#@(clientId + "downloadurl")").html("<a class='btn btn-default ml-1' href='" + responseJSON.downloadUrl + "'><i class='fas fa-download'></i>@T("Admin.Download.DownloadUploadedFile")</a>");
-                            $("#@(documentId)").val(responseJSON.documentId);
+                            $("#Id").val(responseJSON.documentId);
                             $("#@(clientId + "remove")").show();
+                            console.log($('#Id').val());
                         });
 
 
@@ -240,9 +246,8 @@
                             $("#@(clientId + "value") input").val(0);
                             $("#@(clientId) .qq-upload-list-selector").empty();
                             $(this).hide();
+                            console.log($('#Id').val());
                         });
-
-
 
 
                     });

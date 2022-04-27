@@ -71,17 +71,17 @@ namespace Wombit.Plugin.Widgets.BetterDocs.Controllers
         public async Task<IActionResult> Configure()
         {
 
-            var documents = await _documentService.GetDocumentsAsync();
+            //var documents = await _documentService.GetDocumentsAsync();
 
-            var models = new List<DocumentModel>();
+            //var models = new List<DocumentModel>();
 
-            foreach (var document in documents)
-            {
-                models.Add(new DocumentModel
-                {
-                    Title = document.Title
-                });
-            }
+            //foreach (var document in documents)
+            //{
+            //    models.Add(new DocumentModel
+            //    {
+            //        Title = document.Title
+            //    });
+            //}
 
             var model = await _documentModelFactory.PrepareDocumentSearchModelAsync(new DocumentSearchModel());
 
