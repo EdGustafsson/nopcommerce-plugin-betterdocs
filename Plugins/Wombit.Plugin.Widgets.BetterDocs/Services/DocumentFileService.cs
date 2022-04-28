@@ -47,16 +47,16 @@ namespace Wombit.Plugin.Widgets.BetterDocs.Services
         //    return (await GetDocumentUrlAsync(document).Url);
         //}
 
-        protected virtual async Task<byte[]> LoadDocumentFromFileAsync(int documentId, string extension, int targetSize = 0)
+        protected virtual async Task<byte[]> LoadDocumentFromFileAsync(int documentId, string contentType, int targetSize = 0)
         {
-            //var lastPart = await GetFileExtensionFromMimeTypeAsync(mimeType);
-            var fileName = $"{documentId:0000000}_0.{extension}";
+            var lastPart = await GetFileExtensionFromContentTypeAsync(contentType);
+            var fileName = $"{documentId:0000000}_0.{lastPart}";
             var filePath = await GetDocumentLocalPathAsync(fileName);
 
             return await _fileProvider.ReadAllBytesAsync(filePath);
         }
         
-
+        // Gör alla mimetype till contenttype och fixa databas med extensions
 
         protected virtual Task<string> GetDocumentsPathUrlAsync(string storeLocation = null)
         {
@@ -68,7 +68,7 @@ namespace Wombit.Plugin.Widgets.BetterDocs.Services
             return Task.FromResult(documentsPathUrl);
         }
 
-        public virtual async Task<Document> InsertDocumentAsync(IFormFile formFile, string defaultFileName = "", string virtualPath = "")
+        public virtual async Task<Document> InsertDocumentAsync(IFormFile formFile, string title, DateTime uploadedOnUTC, string uploadedBy, int displayorder, string defaultFileName = "", string virtualPath = "")
         {
 
             var fileName = formFile.FileName;
@@ -84,7 +84,7 @@ namespace Wombit.Plugin.Widgets.BetterDocs.Services
             if (!string.IsNullOrEmpty(fileExtension))
                 fileExtension = fileExtension.ToLowerInvariant();
 
-            var document = await InsertDocumentAsync(await _downloadService.GetDownloadBitsAsync(formFile), contentType, _fileProvider.GetFileNameWithoutExtension(fileName));
+            var document = await InsertDocumentAsync(await _downloadService.GetDownloadBitsAsync(formFile), title, uploadedOnUTC, uploadedBy, displayorder, contentType, fileExtension, _fileProvider.GetFileNameWithoutExtension(fileName));
 
             if (string.IsNullOrEmpty(virtualPath))
                 return document;
@@ -95,30 +95,35 @@ namespace Wombit.Plugin.Widgets.BetterDocs.Services
             return document;
         }
 
-        public virtual async Task<Document> InsertDocumentAsync(byte[] documentBinary, string mimeType, string seoFilename, bool validateBinary = true)
+        public virtual async Task<Document> InsertDocumentAsync(byte[] documentBinary, string title, DateTime uploadedOnUTC, string uploadedBy, int displayOrder, string contentType, string extension, string seoFilename, bool validateBinary = true)
         {
-            mimeType = CommonHelper.EnsureNotNull(mimeType);
-            mimeType = CommonHelper.EnsureMaximumLength(mimeType, 20);
+            contentType = CommonHelper.EnsureNotNull(contentType);
+            contentType = CommonHelper.EnsureMaximumLength(contentType, 20);
 
             seoFilename = CommonHelper.EnsureMaximumLength(seoFilename, 100);
 
             var document = new Document
             {
-                MimeType = mimeType,
+                Title = title,
+                UploadedOnUTC = uploadedOnUTC,
+                UploadedBy = uploadedBy,
+                DisplayOrder = displayOrder,
+                ContentType = contentType,
                 SeoFilename = seoFilename,
+                Extension = extension,
             };
 
             await _documentRepository.InsertAsync(document);
             //await UpdatePictureBinaryAsync(picture, await IsStoreInDbAsync() ? pictureBinary : Array.Empty<byte>());
 
-            await SaveDocumentInFileAsync(document.Id, documentBinary, mimeType);
+            await SaveDocumentInFileAsync(document.Id, documentBinary, contentType);
 
             return document;
         }
 
-        protected virtual async Task SaveDocumentInFileAsync(int documentId, byte[] documentBinary, string mimeType)
+        protected virtual async Task SaveDocumentInFileAsync(int documentId, byte[] documentBinary, string contentType)
         {
-            var lastPart = await GetFileExtensionFromMimeTypeAsync(mimeType);
+            var lastPart = await GetFileExtensionFromContentTypeAsync(contentType);
             var fileName = $"{documentId:0000000}_0.{lastPart}";
             await _fileProvider.WriteAllBytesAsync(await GetDocumentLocalPathAsync(fileName), documentBinary);
         }
@@ -145,14 +150,14 @@ namespace Wombit.Plugin.Widgets.BetterDocs.Services
             await _documentRepository.UpdateAsync(document);
             //await UpdatePictureBinaryAsync(picture, await IsStoreInDbAsync() ? (await GetPictureBinaryByPictureIdAsync(picture.Id)).BinaryData : Array.Empty<byte>());
 
-            await SaveDocumentInFileAsync(document.Id, documentBinary, document.MimeType);
+            await SaveDocumentInFileAsync(document.Id, documentBinary, document.ContentType);
 
             return document;
         }
 
-        public virtual async Task<byte[]> LoadDocumentFromFileAsync(int documentId, string mimeType)
+        public virtual async Task<byte[]> LoadDocumentFromFileAsync(int documentId, string contentType)
         {
-            var lastPart = await GetFileExtensionFromMimeTypeAsync(mimeType);
+            var lastPart = await GetFileExtensionFromContentTypeAsync(contentType);
             var fileName = $"{documentId:0000000}_0.{lastPart}";
             var filePath = await GetDocumentLocalPathAsync(fileName);
 
@@ -161,11 +166,11 @@ namespace Wombit.Plugin.Widgets.BetterDocs.Services
 
        
 
-        public virtual async Task<Document> UpdateDocumentAsync(int documentId, byte[] documentBinary, string mimeType,
+        public virtual async Task<Document> UpdateDocumentAsync(int documentId, byte[] documentBinary, string contentType,
          string seoFilename, string title)
         {
-            mimeType = CommonHelper.EnsureNotNull(mimeType);
-            mimeType = CommonHelper.EnsureMaximumLength(mimeType, 20);
+            contentType = CommonHelper.EnsureNotNull(contentType);
+            contentType = CommonHelper.EnsureMaximumLength(contentType, 20);
 
             seoFilename = CommonHelper.EnsureMaximumLength(seoFilename, 100);
 
@@ -177,13 +182,13 @@ namespace Wombit.Plugin.Widgets.BetterDocs.Services
             //if (seoFilename != picture.SeoFilename)
             //    await DeletePictureThumbsAsync(picture);
 
-            document.MimeType = mimeType;
+            document.ContentType = contentType;
             document.SeoFilename = seoFilename;
             document.Title = title;
 
             await _documentRepository.UpdateAsync(document);
 
-            await SaveDocumentInFileAsync(document.Id, documentBinary, mimeType);
+            await SaveDocumentInFileAsync(document.Id, documentBinary, contentType);
 
             return document;
         }
@@ -310,12 +315,12 @@ namespace Wombit.Plugin.Widgets.BetterDocs.Services
         //    return url;
         //}
 
-        public virtual Task<string> GetFileExtensionFromMimeTypeAsync(string mimeType)
+        public virtual Task<string> GetFileExtensionFromContentTypeAsync(string contentType)
         {
-            if (mimeType == null)
+            if (contentType == null)
                 return Task.FromResult<string>(null);
 
-            var parts = mimeType.Split('/');
+            var parts = contentType.Split('/');
             var lastPart = parts[^1];
             //switch (lastPart)
             //{
@@ -341,13 +346,13 @@ namespace Wombit.Plugin.Widgets.BetterDocs.Services
                 throw new ArgumentNullException(nameof(document));
 
 
-            return await LoadDocumentFromFileAsync(document.Id, document.MimeType); ;
+            return await LoadDocumentFromFileAsync(document.Id, document.ContentType); ;
         }
 
-        public virtual async Task<Document> UpdateDocumentAsync(int documentId, byte[] documentBinary, string mimeType, string seoFilename, string title, DateTime uploadedOnUTC, string uploadedBy, int displayOrder)
+        public virtual async Task<Document> UpdateDocumentAsync(int documentId, byte[] documentBinary, string contentType, string seoFilename, string title, DateTime uploadedOnUTC, string uploadedBy, int displayOrder)
         {
-            mimeType = CommonHelper.EnsureNotNull(mimeType);
-            mimeType = CommonHelper.EnsureMaximumLength(mimeType, 20);
+            contentType = CommonHelper.EnsureNotNull(contentType);
+            contentType = CommonHelper.EnsureMaximumLength(contentType, 20);
 
             seoFilename = CommonHelper.EnsureMaximumLength(seoFilename, 100);
 
@@ -359,7 +364,7 @@ namespace Wombit.Plugin.Widgets.BetterDocs.Services
             //if (seoFilename != picture.SeoFilename)
             //    await DeletePictureThumbsAsync(picture);
 
-            document.MimeType = mimeType;
+            document.ContentType = contentType;
             document.SeoFilename = seoFilename;
             document.Title = title;
             document.UploadedOnUTC = uploadedOnUTC;
@@ -368,7 +373,7 @@ namespace Wombit.Plugin.Widgets.BetterDocs.Services
 
             await _documentRepository.UpdateAsync(document);
 
-            await SaveDocumentInFileAsync(document.Id, documentBinary, mimeType);
+            await SaveDocumentInFileAsync(document.Id, documentBinary, contentType);
 
             return document;
         }

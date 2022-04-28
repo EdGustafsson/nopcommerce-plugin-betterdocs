@@ -155,9 +155,9 @@ namespace Wombit.Plugin.Widgets.BetterDocs.Controllers
 
                 await _documentFileService.UpdateDocumentAsync(document.Id,
                 await _documentFileService.LoadDocumentBinaryAsync(document),
-                    document.MimeType,
+                    document.ContentType,
                     document.SeoFilename,
-                    document.Title, 
+                    document.Title,
                     document.UploadedOnUTC,
                     document.UploadedBy,
                     document.DisplayOrder);
@@ -177,9 +177,9 @@ namespace Wombit.Plugin.Widgets.BetterDocs.Controllers
 
 
             //try to get a picture with the specified id
-            
 
-         
+
+
 
         }
 
@@ -187,7 +187,7 @@ namespace Wombit.Plugin.Widgets.BetterDocs.Controllers
         public virtual async Task<IActionResult> Edit(int id)
         {
 
-            
+
             var document = await _documentService.GetDocumentByIdAsync(id);
             if (document == null)
                 return RedirectToAction("Configure");
@@ -214,7 +214,7 @@ namespace Wombit.Plugin.Widgets.BetterDocs.Controllers
 
                 await _documentFileService.UpdateDocumentAsync(document.Id,
                 await _documentFileService.LoadDocumentBinaryAsync(document),
-                    document.MimeType,
+                    document.ContentType,
                     document.SeoFilename,
                     model.Title);
 
@@ -239,7 +239,7 @@ namespace Wombit.Plugin.Widgets.BetterDocs.Controllers
 
             await _documentService.DeleteDocumentAsync(document);
 
-            
+
 
             return RedirectToAction("Configure");
         }
@@ -253,7 +253,7 @@ namespace Wombit.Plugin.Widgets.BetterDocs.Controllers
 
                 await _documentService.DeleteDocumentsAsync(await _documentService.GetDocumentsByIdsAsync(selectedIds.ToArray()));
 
-               
+
             }
 
             return Json(new { Result = true });
@@ -317,7 +317,7 @@ namespace Wombit.Plugin.Widgets.BetterDocs.Controllers
         [FormValueRequired("save")]
         public virtual async Task<IActionResult> ProductAddPopup(AddMappingToDocumentModel model)
         {
-            
+
             var selectedProducts = await _productService.GetProductsByIdsAsync(model.SelectedProductIds.ToArray());
             if (selectedProducts.Any())
             {
@@ -365,11 +365,21 @@ namespace Wombit.Plugin.Widgets.BetterDocs.Controllers
 
             const string qqFileNameParameter = "qqfilename";
 
+            var title = Request.Form.ContainsKey("title")
+                ? Request.Form["title"].ToString()
+                : string.Empty;
+
             var qqFileName = Request.Form.ContainsKey(qqFileNameParameter)
                 ? Request.Form[qqFileNameParameter].ToString()
                 : string.Empty;
 
-            var document = await _documentFileService.InsertDocumentAsync(httpPostedFile, qqFileName);
+            var uploadedOnUTC = DateTime.UtcNow;
+            var uploadedBy = _workContext.GetCurrentCustomerAsync().Result.Username;
+            var displayOrder = 1;
+
+            var document = await _documentFileService.InsertDocumentAsync(httpPostedFile, title, uploadedOnUTC, uploadedBy, displayOrder, qqFileName);
+
+
 
             //when returning JSON the mime-type must be set to text/plain
             //otherwise some browsers will pop-up a "Save As" dialog.
@@ -377,13 +387,17 @@ namespace Wombit.Plugin.Widgets.BetterDocs.Controllers
             if (document == null)
                 return Json(new { success = false, message = "Wrong file format" });
 
+
+
             return Json(new
             {
                 success = true,
                 documentId = document.Id,
                 //documentUrl = (await _documentFileService.GetDocumentUrlAsync(document)).Url'
                 documentUrl = Url.Action("DownloadFile", new { id = document.Id })
-            });
+            });;
+
+            return RedirectToAction("Configure");
         }
 
         public virtual async Task<IActionResult> DownloadFile(int id)
@@ -399,7 +413,7 @@ namespace Wombit.Plugin.Widgets.BetterDocs.Controllers
             //if (document.DownloadBinary == null)
             //    return Content($"Download data is not available any more. Download GD={download.Id}");
 
-            var documentBinary = await _documentFileService.LoadDocumentFromFileAsync(id, document.MimeType);
+            var documentBinary = await _documentFileService.LoadDocumentFromFileAsync(id, document.ContentType);
 
             var fileName = !string.IsNullOrWhiteSpace(document.SeoFilename) ? document.SeoFilename : document.Id.ToString();
             var contentType = !string.IsNullOrWhiteSpace(document.ContentType)
@@ -407,7 +421,7 @@ namespace Wombit.Plugin.Widgets.BetterDocs.Controllers
                 : MimeTypes.ApplicationOctetStream;
             return new FileContentResult(documentBinary, contentType)
             {
-                FileDownloadName = fileName + document.MimeType
+                FileDownloadName = fileName + document.Extension
             };
         }
 

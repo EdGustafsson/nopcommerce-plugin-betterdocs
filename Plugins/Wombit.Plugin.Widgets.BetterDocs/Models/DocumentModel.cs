@@ -33,8 +33,8 @@ namespace Wombit.Plugin.Widgets.BetterDocs.Models
         public int DisplayOrder { get; set; }
         [NopResourceDisplayName("Plugins.Widgets.BetterDocs.Admin.Fields.ContentType")]
         public string ContentType { get; set; }
-        [NopResourceDisplayName("Plugins.Widgets.BetterDocs.Admin.Fields.MimeType")]
-        public string MimeType { get; set; }
+        [NopResourceDisplayName("Plugins.Widgets.BetterDocs.Admin.Fields.Extension")]
+        public string Extension { get; set; }
 
         [NopResourceDisplayName("Plugins.Widgets.BetterDocs.Admin.Fields.UploadedOnUTC")]
         public DateTime UploadedOnUTC { get; set; }

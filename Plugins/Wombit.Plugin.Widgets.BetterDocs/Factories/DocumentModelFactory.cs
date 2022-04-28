@@ -84,8 +84,8 @@ namespace Wombit.Plugin.Widgets.BetterDocs.Factories
                         Id = doc.Id,
                         Title = doc.Title,
                         SeoFilename = doc.SeoFilename,
-                        MimeType = doc.MimeType,
                         ContentType = doc.ContentType,
+                        Extension = doc.Extension,
                         DisplayOrder = doc.DisplayOrder,
                         UploadedOnUTC = doc.UploadedOnUTC,
                         UploadedBy = doc.UploadedBy
