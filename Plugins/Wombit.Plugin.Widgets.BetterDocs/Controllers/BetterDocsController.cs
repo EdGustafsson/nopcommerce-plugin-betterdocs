@@ -365,6 +365,79 @@ namespace Wombit.Plugin.Widgets.BetterDocs.Controllers
 
             const string qqFileNameParameter = "qqfilename";
 
+            var shouldContinue = Request.Form.ContainsKey("shouldContinue")
+                ? Request.Form["shouldContinue"].ToString()
+                : string.Empty;
+
+            var title = Request.Form.ContainsKey("title")
+                ? Request.Form["title"].ToString()
+                : string.Empty;
+
+            var qqFileName = Request.Form.ContainsKey(qqFileNameParameter)
+                ? Request.Form[qqFileNameParameter].ToString()
+                : string.Empty;
+
+            var uploadedOnUTC = DateTime.UtcNow;
+            var uploadedBy = _workContext.GetCurrentCustomerAsync().Result.Username;
+            var displayOrder = 1;
+
+            var document = await _documentFileService.InsertDocumentAsync(httpPostedFile, title, uploadedOnUTC, uploadedBy, displayOrder, qqFileName);
+
+
+
+            //when returning JSON the mime-type must be set to text/plain
+            //otherwise some browsers will pop-up a "Save As" dialog.
+
+            if (document == null)
+                return Json(new { success = false, message = "Wrong file format" });
+
+
+            if(shouldContinue == "false")
+            {
+                return Json(new
+                {
+                    success = true,
+                    documentId = document.Id,
+                    //documentUrl = (await _documentFileService.GetDocumentUrlAsync(document)).Url'
+                    documentUrl = Url.Action("DownloadFile", new { id = document.Id }),
+                    Url = "Configure"
+                });
+            }
+            else
+            {
+                return Json(new
+                {
+                    success = true,
+                    documentId = document.Id,
+                    //documentUrl = (await _documentFileService.GetDocumentUrlAsync(document)).Url'
+                    documentUrl = Url.Action("DownloadFile", new { id = document.Id }),
+                    Url = "Edit"
+                });
+            }
+        }
+
+
+        [HttpPost]
+        //do not validate request token (XSRF)
+        [IgnoreAntiforgeryToken]
+        /// <returns>A task that represents the asynchronous operation</returns>
+        public virtual async Task<IActionResult> AsyncUploadContinue()
+        {
+            //if (!await _permissionService.Authorize(StandardPermissionProvider.UploadPictures))
+            //    return Json(new { success = false, error = "You do not have required permissions" }, "text/plain");
+
+            var httpPostedFile = Request.Form.Files.FirstOrDefault();
+            if (httpPostedFile == null)
+            {
+                return Json(new
+                {
+                    success = false,
+                    message = "No file uploaded"
+                });
+            }
+
+            const string qqFileNameParameter = "qqfilename";
+
             var title = Request.Form.ContainsKey("title")
                 ? Request.Form["title"].ToString()
                 : string.Empty;
@@ -394,10 +467,9 @@ namespace Wombit.Plugin.Widgets.BetterDocs.Controllers
                 success = true,
                 documentId = document.Id,
                 //documentUrl = (await _documentFileService.GetDocumentUrlAsync(document)).Url'
-                documentUrl = Url.Action("DownloadFile", new { id = document.Id })
-            });;
-
-            return RedirectToAction("Configure");
+                documentUrl = Url.Action("DownloadFile", new { id = document.Id }),
+                Url = "Edit"
+            });
         }
 
         public virtual async Task<IActionResult> DownloadFile(int id)

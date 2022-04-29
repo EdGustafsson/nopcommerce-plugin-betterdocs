@@ -315,7 +315,7 @@
                                                   $(document).ready(function () {
 
                                                         let title = ''
-
+                                                        let shouldContinue = null
                                                         //const inputElement = document.querySelector
 
                                                         //console.log(inputElement)
@@ -334,8 +334,12 @@
                                                                 {
                                                                 const el = document.querySelector('#Title')
                                                                 if (el) return el.value;    
-                                                                }  
-                                                                }     
+                                                                },
+                                                                shouldContinue: function () 
+                                                                {
+                                                                    return shouldContinue    
+                                                                }
+                                                                }
                                                           },
                                                           template: "qq-template-manual-trigger",
                                                           multiple: false,
@@ -345,6 +349,23 @@
                                                           $("#@(clientId + "downloadurl")").html("<a class='btn btn-default ml-1' href='" + responseJSON.downloadUrl + "'><i class='fas fa-download'></i>@T("Admin.Download.DownloadUploadedFile")</a>");
                                                           $("#Id").val(responseJSON.documentId);
                                                           $("#@(clientId + "remove")").show();
+
+
+
+                                                            //var documentId = responseJSON.documentId;
+                                                            //if (str.substr("successfully")) {
+
+                                                            if(responseJSON.Url == "Configure")
+                                                            {
+                                                                  window.location.href=responseJSON.Url;
+                                                            }
+                                                            else
+                                                            {
+                                                                 window.location.href='@Url.Action("Edit","BetterDocs",new { id = "ID"})'.replace("ID",responseJSON.documentId);
+                                                            }
+                                                              
+                                                            //}
+
                                                       });
 
 
@@ -359,6 +380,19 @@
                                                            const el = document.querySelector('#Title')
 
                                                            if (el) {title=el.value;}
+
+                                                           shouldContinue = false;
+
+                                                           $("#@clientId").fineUploader('uploadStoredFiles');
+                                                       });
+
+                                                           
+                                                       $('#trigger-upload-continue').click(function() {
+                                                            const el = document.querySelector('#Title')
+
+                                                           if (el) {title=el.value;}
+
+                                                           shouldContinue = true; 
 
                                                            $("#@clientId").fineUploader('uploadStoredFiles');
                                                        });
