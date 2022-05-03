@@ -89,7 +89,8 @@ namespace Wombit.Plugin.Widgets.BetterDocs.Services
             if (string.IsNullOrEmpty(virtualPath))
                 return document;
 
-            document.VirtualPath = _fileProvider.GetVirtualPath(virtualPath);
+            //document.VirtualPath = _fileProvider.GetVirtualPath(virtualPath);
+
             await UpdateDocumentAsync(document, await _downloadService.GetDownloadBitsAsync(formFile));
 
             return document;

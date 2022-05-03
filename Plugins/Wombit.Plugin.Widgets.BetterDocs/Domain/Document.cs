@@ -5,7 +5,6 @@ namespace Wombit.Plugin.Widgets.BetterDocs.Domain
 {
     public partial class Document : BaseEntity
     {
-        //public int DownloadId { get; set; }
         public string Title { get; set; }
         public string SeoFilename { get; set; }
         public bool Published { get; set; }
@@ -15,7 +14,6 @@ namespace Wombit.Plugin.Widgets.BetterDocs.Domain
         public DateTime UploadedOnUTC { get; set; }
         public string UploadedBy { get; set; }
 
-        public string VirtualPath { get; set; }
 
     }
 }

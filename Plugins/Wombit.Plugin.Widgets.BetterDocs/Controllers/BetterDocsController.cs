@@ -373,6 +373,15 @@ namespace Wombit.Plugin.Widgets.BetterDocs.Controllers
                 ? Request.Form["title"].ToString()
                 : string.Empty;
 
+            if (title == null || title == "")
+            {
+                return Json(new
+                {
+                    success = false,
+                    message = "Please input a title"
+                });
+            }
+
             var qqFileName = Request.Form.ContainsKey(qqFileNameParameter)
                 ? Request.Form[qqFileNameParameter].ToString()
                 : string.Empty;
@@ -441,6 +450,15 @@ namespace Wombit.Plugin.Widgets.BetterDocs.Controllers
             var title = Request.Form.ContainsKey("title")
                 ? Request.Form["title"].ToString()
                 : string.Empty;
+
+            if (title == null || title == "")
+            {
+                return Json(new
+                {
+                    success = false,
+                    message = "Please input a title"
+                });
+            }
 
             var qqFileName = Request.Form.ContainsKey(qqFileNameParameter)
                 ? Request.Form[qqFileNameParameter].ToString()

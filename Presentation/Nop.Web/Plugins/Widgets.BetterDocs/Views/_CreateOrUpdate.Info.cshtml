@@ -178,9 +178,9 @@
             <div class="qq-upload-button-selector qq-upload-button">
                 <div>Select files</div>
             </div>
-            @*<button type="button" id="trigger-upload" class="btn btn-primary">
-                <i class="icon-upload icon-white"></i> Upload
-            </button>*@
+    @*<button type="button" id="trigger-upload" class="btn btn-primary">
+        <i class="icon-upload icon-white"></i> Upload
+        </button>*@
         </div>
         <span class="qq-drop-processing-selector qq-drop-processing">
             <span>Processing dropped files...</span>
@@ -312,92 +312,110 @@
 
                 <script>
 
-                                                  $(document).ready(function () {
+                    $(document).ready(function () {
 
-                                                        let title = ''
-                                                        let shouldContinue = null
-                                                        //const inputElement = document.querySelector
+                          let title = ''
+                          let shouldContinue = null
+                          //const inputElement = document.querySelector
 
-                                                        //console.log(inputElement)
+                          //console.log(inputElement)
 
-                                                        //if(inputElement) inputElement.addEventListener('keyup', (e) => {
-                                                        //    console.log(e)
-                                                        //    title = e.target.value
-                                                        //})
-
-
-                                                      $("#@clientId").fineUploader({
-                                                          request: {
-                                                            endpoint: '@(Url.Action("AsyncUpload", "BetterDocs", new { area = AreaNames.Admin }))',
-                                                            params: {
-                                                                title: function () 
-                                                                {
-                                                                const el = document.querySelector('#Title')
-                                                                if (el) return el.value;    
-                                                                },
-                                                                shouldContinue: function () 
-                                                                {
-                                                                    return shouldContinue    
-                                                                }
-                                                                }
-                                                          },
-                                                          template: "qq-template-manual-trigger",
-                                                          multiple: false,
-                                                          autoUpload: false,
-
-                                                      }).on("complete", function (event, id, name, responseJSON, xhr) {
-                                                          $("#@(clientId + "downloadurl")").html("<a class='btn btn-default ml-1' href='" + responseJSON.downloadUrl + "'><i class='fas fa-download'></i>@T("Admin.Download.DownloadUploadedFile")</a>");
-                                                          $("#Id").val(responseJSON.documentId);
-                                                          $("#@(clientId + "remove")").show();
+                          //if(inputElement) inputElement.addEventListener('keyup', (e) => {
+                          //    console.log(e)
+                          //    title = e.target.value
+                          //})
 
 
+                        $("#@clientId").fineUploader({
+                            request: {
+                              endpoint: '@(Url.Action("AsyncUpload", "BetterDocs", new { area = AreaNames.Admin }))',
+                              params: {
+                                  title: function ()
+                                  {
+                                  const el = document.querySelector('#Title')
+                                  if (el) return el.value;
+                                  },
+                                  shouldContinue: function ()
+                                  {
+                                      return shouldContinue
+                                  }
+                                  }
+                            },
+                            template: "qq-template-manual-trigger",
+                            multiple: false,
+                            autoUpload: false,
 
-                                                            //var documentId = responseJSON.documentId;
-                                                            //if (str.substr("successfully")) {
+                        }).on("complete", function (event, id, name, responseJSON, xhr) {
 
-                                                            if(responseJSON.Url == "Configure")
-                                                            {
-                                                                  window.location.href=responseJSON.Url;
-                                                            }
-                                                            else
-                                                            {
-                                                                 window.location.href='@Url.Action("Edit","BetterDocs",new { id = "ID"})'.replace("ID",responseJSON.documentId);
-                                                            }
-                                                              
-                                                            //}
+                            if (responseJSON.success) {
 
-                                                      });
+                                  $("#@(clientId + "downloadurl")").html("<a class='btn btn-default ml-1' href='" + responseJSON.downloadUrl + "'><i class='fas fa-download'></i>@T("Admin.Download.DownloadUploadedFile")</a>");
+                                  $("#Id").val(responseJSON.documentId);
+                                  $("#@(clientId + "remove")").show();
 
 
-                                                      $("#@(clientId + "remove")").click(function (e) {
-                                                          $("#@(clientId + "downloadurl")").html("");
-                                                          $("#@(clientId + "value") input").val(0);
-                                                          $("#@(clientId) .qq-upload-list-selector").empty();
-                                                          $(this).hide();
-                                                      });
+                                if(responseJSON.Url == "Configure")
+                                {
+                                    window.location.href=responseJSON.Url;
+                                }
+                                else
+                                {
+                                   window.location.href='@Url.Action("Edit","BetterDocs",new { id = "ID"})'.replace("ID",responseJSON.documentId);
+                                }
 
-                                                       $('#trigger-upload').click(function() {
-                                                           const el = document.querySelector('#Title')
+                                }
+    
+                           if(responseJSON.message) {
 
-                                                           if (el) {title=el.value;}
+                                $('#uploadFileProductAttributeFailed-info').text((responseJSON.message).Text.replace(/<[^>]+>/g, ''));
+                                $("#uploadFileProductAttributeFailed").click();
 
-                                                           shouldContinue = false;
+                           }
 
-                                                           $("#@clientId").fineUploader('uploadStoredFiles');
-                                                       });
 
-                                                           
-                                                       $('#trigger-upload-continue').click(function() {
-                                                            const el = document.querySelector('#Title')
 
-                                                           if (el) {title=el.value;}
 
-                                                           shouldContinue = true; 
 
-                                                           $("#@clientId").fineUploader('uploadStoredFiles');
-                                                       });
 
-                                                  });
+                              //var documentId = responseJSON.documentId;
+                              //if (str.substr("successfully")) {
+
+
+
+                              //}
+
+                        });
+
+
+                        $("#@(clientId + "remove")").click(function (e) {
+                            $("#@(clientId + "downloadurl")").html("");
+                            $("#@(clientId + "value") input").val(0);
+                            $("#@(clientId) .qq-upload-list-selector").empty();
+                            $(this).hide();
+                        });
+
+                         $('#trigger-upload').click(function() {
+                             const el = document.querySelector('#Title')
+
+                             if (el) {title=el.value;}
+
+                             shouldContinue = false;
+
+                             $("#@clientId").fineUploader('uploadStoredFiles');
+                         });
+
+
+                         $('#trigger-upload-continue').click(function() {
+                              const el = document.querySelector('#Title')
+
+                             if (el) {title=el.value;}
+
+                             shouldContinue = true;
+
+                             $("#@clientId").fineUploader('uploadStoredFiles');
+                         });
+
+                    });
 
                 </script>
                 <div style="clear: both;">
@@ -439,5 +457,7 @@
             <span asp-validation-for="Title"></span>
         </div>
     </div>
+
+     <nop-alert asp-alert-id="uploadFileProductAttributeFailed" />
 
 </div>
