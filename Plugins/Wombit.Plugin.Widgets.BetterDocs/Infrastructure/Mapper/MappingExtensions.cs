@@ -3,7 +3,7 @@ using Nop.Core;
 using Nop.Core.Infrastructure.Mapper;
 using Nop.Web.Framework.Models;
 
-namespace Wombit.Plugin.Widgets.Documents.Infrastructure.Mapper
+namespace Wombit.Plugin.Widgets.BetterDocs.Infrastructure.Mapper
 {
     public static class MappingExtensions
     {

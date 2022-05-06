@@ -32,7 +32,7 @@
     Html.SetActiveMenuItemSystemName("Documents");
 }
 
-@*<form asp-controller="BetterDocs" asp-action="Create" method="post" id="document-form">*@
+<form asp-controller="BetterDocs" asp-action="Create" method="post" id="document-form">
     <div class="content-header clearfix">
         <h1 class="float-left">
             @T("Plugins.Widgets.BetterDocs.Admin.Fields.Documents.AddNew")
@@ -60,4 +60,4 @@
         </div>
     </div>
     @await Html.PartialAsync("~/Plugins/Widgets.BetterDocs/Views/_CreateOrUpdate.cshtml", Model)
-@*</form>*@
+</form>

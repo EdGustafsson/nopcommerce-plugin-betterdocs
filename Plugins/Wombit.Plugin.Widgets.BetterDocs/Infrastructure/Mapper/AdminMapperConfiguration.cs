@@ -4,7 +4,7 @@ using Wombit.Plugin.Widgets.BetterDocs.Domain;
 using Wombit.Plugin.Widgets.BetterDocs.Models;
 
 
-namespace Wombit.Plugin.Widgets.Documents.Infrastructure.Mapper
+namespace Wombit.Plugin.Widgets.BetterDocs.Infrastructure.Mapper
 {
     public class AdminMapperConfiguration : Profile, IOrderedMapperProfile
     {
