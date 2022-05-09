@@ -346,7 +346,7 @@
             <nop-label asp-for="Title" />
         </div>
         <div class="col-md-9">
-            <nop-editor asp-for="Title" id="Title" name="Title" />
+            <nop-editor asp-for="Title" id="Title" name="Title" width="200" />
             <span asp-validation-for="Title"></span>
         </div>
     </div>
@@ -446,11 +446,9 @@
 
                   if(pendingUpload == 1 && @Model.Id > 0){
 
-                        window.location.href='@Url.Action("Edit","BetterDocs",new { id = "ID", title = "TITLE"})' 
+                        window.location.href='@Url.Action("UpdateAsync","BetterDocs",new { id = "ID", title = "TITLE"})' 
                         .replace("ID", @Model.Id)
                         .replace("TITLE", el.value);
-
-
 
                   }
                   else{
@@ -467,13 +465,42 @@
 
 
          $('#trigger-upload-continue').click(function() {
-              const el = document.querySelector('#Title')
+             
+            
+              if (form.valid()) {
 
-             if (el) {title=el.value;}
 
-             shouldContinue = true;
+              e.preventDefault();
 
-             $("#@clientId").fineUploader('uploadStoredFiles');
+              let pendingUpload = $("#@clientId").fineUploader('getRemainingAllowedItems');
+
+
+                const el = document.querySelector('#Title')
+
+                  if (el) {title=el.value;}
+
+                   let form = $('#document-form');
+
+                 shouldContinue = true;
+
+
+                  if(pendingUpload == 1 && @Model.Id > 0){
+
+                        window.location.href='@Url.Action("UpdateAsync","BetterDocs",new { id = "ID", title = "TITLE"})' 
+                        .replace("ID", @Model.Id)
+                        .replace("TITLE", el.value);
+
+                  }
+                  else{
+
+
+                  $("#@clientId").fineUploader('uploadStoredFiles');
+
+                  }
+
+
+
+              }
          });
 
      });

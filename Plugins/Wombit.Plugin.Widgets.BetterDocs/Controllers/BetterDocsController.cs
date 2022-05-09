@@ -1,38 +1,21 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using Nop.Core.Domain.Media;
+﻿using Microsoft.AspNetCore.Mvc;
+using Nop.Core;
+using Nop.Services.Catalog;
 using Nop.Services.Media;
+using Nop.Services.Security;
+using Nop.Web.Areas.Admin.Infrastructure.Mapper.Extensions;
 using Nop.Web.Framework;
+using Nop.Web.Framework.Controllers;
 using Nop.Web.Framework.Mvc;
 using Nop.Web.Framework.Mvc.Filters;
-using Nop.Core;
-using Nop.Services.Configuration;
-using Nop.Services.Localization;
-using Nop.Services.Messages;
-using Nop.Services.Security;
-using Nop.Web.Framework.Controllers;
-using Wombit.Plugin.Widgets.BetterDocs.Services;
-using Wombit.Plugin.Widgets.BetterDocs.Models;
-using Wombit.Plugin.Widgets.BetterDocs.Factories;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using Wombit.Plugin.Widgets.BetterDocs.Domain;
-using Nop.Web.Areas.Admin.Infrastructure.Mapper.Extensions;
-using Microsoft.AspNetCore.Http;
-using Nop.Core.Caching;
-using Nop.Core.Domain.Catalog;
-using Nop.Core.Domain.Discounts;
-using Nop.Services.Catalog;
-using Nop.Services.Customers;
-using Nop.Services.Discounts;
-using Nop.Services.ExportImport;
-using Nop.Services.Logging;
-using Nop.Services.Seo;
-using Nop.Services.Stores;
-using Nop.Web.Areas.Admin.Factories;
-using Nop.Web.Areas.Admin.Models.Catalog;
+using Wombit.Plugin.Widgets.BetterDocs.Factories;
+using Wombit.Plugin.Widgets.BetterDocs.Models;
+using Wombit.Plugin.Widgets.BetterDocs.Services;
 
 namespace Wombit.Plugin.Widgets.BetterDocs.Controllers
 {
@@ -515,46 +498,35 @@ namespace Wombit.Plugin.Widgets.BetterDocs.Controllers
             };
         }
 
-        //public virtual async Task<IActionResult> AsyncUpdate(int documentId, int displayOrder,
-        //    string overrideAltAttribute, string overrideTitleAttribute, int productId)
-        //{
-        //    if (!await _permissionService.AuthorizeAsync(StandardPermissionProvider.ManageProducts))
-        //        return AccessDeniedView();
+        public virtual async Task<IActionResult> AsyncUpdate(DocumentModel model, bool continueEditing)
+        {
+            var document = await _documentService.GetDocumentByIdAsync(model.Id);
+            if (document == null)
+                return RedirectToAction("Configure");
 
-        //    if (documentId == 0)
-        //        throw new ArgumentException();
+            if (ModelState.IsValid)
+            {
 
-        //    //try to get a product with the specified id
-        //    var product = await _productService.GetProductByIdAsync(productId)
-        //        ?? throw new ArgumentException("No product found with the specified id");
+                //document = model.ToEntity(document);
+                //await _documentService.UpdateAsync(document);
 
-        //    //a vendor should have access only to his products
-        //    if (await _workContext.GetCurrentVendorAsync() != null && product.VendorId != (await _workContext.GetCurrentVendorAsync()).Id)
-        //        return RedirectToAction("List");
 
-        //    if ((await _productService.GetProductPicturesByProductIdAsync(productId)).Any(p => p.PictureId == pictureId))
-        //        return Json(new { Result = false });
+                await _documentFileService.UpdateDocumentAsync(document.Id,
+                await _documentFileService.LoadDocumentBinaryAsync(document),
+                    document.ContentType,
+                    document.SeoFilename,
+                    model.Title);
 
-        //    //try to get a picture with the specified id
-        //    var document = await _documentService.GetDocumentByIdAsync(documentId)
-        //        ?? throw new ArgumentException("No document found with the specified id");
+                if (!continueEditing)
+                    return RedirectToAction("Configure");
 
-        //    await _documentFileService.UpdateDocumentAsync(document.Id,
-        //        await _documentFileService.LoadDocumentBinaryAsync(document),
-        //        document.MimeType,
-        //        document.SeoFilename);
+                return RedirectToAction("Edit", new { id = document.Id });
+            }
 
-        //    //await _pictureService.SetSeoFilenameAsync(pictureId, await _pictureService.GetPictureSeNameAsync(product.Name));
+            model = await _documentModelFactory.PrepareDocumentModelAsync(model, document);
 
-        //    //await _productService.InsertProductPictureAsync(new ProductPicture
-        //    //{
-        //    //    PictureId = pictureId,
-        //    //    ProductId = productId,
-        //    //    DisplayOrder = displayOrder
-        //    //});
-
-        //    return Json(new { Result = true });
-        //}
+            return View("~/Plugins/Widgets.BetterDocs/Views/Edit.cshtml", model);
+        }
 
 
 

@@ -346,7 +346,7 @@
             <nop-label asp-for="Title" />
         </div>
         <div class="col-md-9">
-            <nop-editor asp-for="Title" id="Title" name="Title" />
+            <nop-editor asp-for="Title" id="Title" name="Title" width=50 />
             <span asp-validation-for="Title"></span>
         </div>
     </div>
@@ -362,7 +362,7 @@
           let shouldContinue = null
 
 
-  
+
 
           //const inputElement = document.querySelector
 
@@ -414,7 +414,7 @@
               //}
 
         });
-    
+
             $("#@clientId").fineUploader('setItemLimit', 1)
 
 
@@ -428,37 +428,79 @@
          $('#trigger-upload').click(function(e) {
 
 
-             e.preventDefault();
-
-              let check = $("#@clientId").fineUploader('getRemainingAllowedItems');
-
-                  console.log(check);
-
-             let form = $('#document-form');
               if (form.valid()) {
 
-                shouldContinue = false;
 
-                  const el = document.querySelector('#Title')
+              e.preventDefault();
+
+              let pendingUpload = $("#@clientId").fineUploader('getRemainingAllowedItems');
+
+
+                const el = document.querySelector('#Title')
 
                   if (el) {title=el.value;}
 
+                   let form = $('#document-form');
+
+                  shouldContinue = false;
+
+                  if(pendingUpload == 1 && @Model.Id > 0){
+
+                        window.location.href='@Url.Action("UpdateAsync","BetterDocs",new { id = "ID", title = "TITLE"})' 
+                        .replace("ID", @Model.Id)
+                        .replace("TITLE", el.value);
+
+                  }
+                  else{
+
+
                   $("#@clientId").fineUploader('uploadStoredFiles');
 
-                 
+                  }
+
+
 
               }
          });
 
 
          $('#trigger-upload-continue').click(function() {
-              const el = document.querySelector('#Title')
+             
+            
+              if (form.valid()) {
 
-             if (el) {title=el.value;}
 
-             shouldContinue = true;
+              e.preventDefault();
 
-             $("#@clientId").fineUploader('uploadStoredFiles');
+              let pendingUpload = $("#@clientId").fineUploader('getRemainingAllowedItems');
+
+
+                const el = document.querySelector('#Title')
+
+                  if (el) {title=el.value;}
+
+                   let form = $('#document-form');
+
+                 shouldContinue = true;
+
+
+                  if(pendingUpload == 1 && @Model.Id > 0){
+
+                        window.location.href='@Url.Action("UpdateAsync","BetterDocs",new { id = "ID", title = "TITLE"})' 
+                        .replace("ID", @Model.Id)
+                        .replace("TITLE", el.value);
+
+                  }
+                  else{
+
+
+                  $("#@clientId").fineUploader('uploadStoredFiles');
+
+                  }
+
+
+
+              }
          });
 
      });
