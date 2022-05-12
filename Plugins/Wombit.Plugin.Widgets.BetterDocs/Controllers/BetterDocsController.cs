@@ -89,84 +89,6 @@ namespace Wombit.Plugin.Widgets.BetterDocs.Controllers
             return View("~/Plugins/Widgets.BetterDocs/Views/Create.cshtml", model);
         }
 
-        //[HttpPost, ParameterBasedOnFormName("save-continue", "continueEditing")]
-        //public virtual async Task<IActionResult> Create(DocumentModel model, bool continueEditing)
-        //{
-        //    if (ModelState.IsValid)
-        //    {
-        //        var document = model.ToEntity<Document>();
-
-        //        document.UploadedOnUTC = DateTime.UtcNow;
-        //        document.UploadedBy = _workContext.GetCurrentCustomerAsync().Result.Username;
-        //        document.DisplayOrder = 1;
-
-        //        await _documentService.InsertAsync(document);
-
-        //        await _documentService.UpdateAsync(document);
-
-        //        if (!continueEditing)
-        //            return RedirectToAction("Configure");
-
-        //        return RedirectToAction("Edit", new { id = document.Id });
-        //    }
-
-        //    model = await _documentModelFactory.PrepareDocumentModelAsync(model, null);
-
-        //    return View("~/Plugins/Widgets.BetterDocs/Views/Create.cshtml", model);
-        //}
-
-        //[HttpPost, ParameterBasedOnFormName("save-continue", "continueEditing")]
-        //public virtual async Task<IActionResult> Create(int id, string title, bool continueEditing)
-        //{
-
-        //    var document = await _documentService.GetDocumentByIdAsync(id)
-        //       ?? throw new ArgumentException("No document found with the specified id");
-
-        //    if (ModelState.IsValid)
-        //    {
-
-        //        //var document = model.ToEntity<Document>();
-
-        //        document.UploadedOnUTC = DateTime.UtcNow;
-        //        document.UploadedBy = _workContext.GetCurrentCustomerAsync().Result.Username;
-        //        document.DisplayOrder = 1;
-        //        document.Title = title;
-
-        //        //await _documentService.InsertAsync(document);
-
-        //        //await _documentService.UpdateAsync(document);
-
-        //        await _documentFileService.UpdateDocumentAsync(document.Id,
-        //        await _documentFileService.LoadDocumentBinaryAsync(document),
-        //            document.ContentType,
-        //            document.SeoFilename,
-        //            document.Title,
-        //            document.UploadedOnUTC,
-        //            document.UploadedBy,
-        //            document.DisplayOrder);
-
-
-        //        if (!continueEditing)
-        //            return RedirectToAction("Configure");
-
-        //        return RedirectToAction("Edit", new { id = document.Id });
-        //    }
-
-        //    var model = await _documentModelFactory.PrepareDocumentModelAsync(null, document);
-
-        //    model = await _documentModelFactory.PrepareDocumentModelAsync(model, null);
-
-        //    return View("~/Plugins/Widgets.BetterDocs/Views/Create.cshtml", model);
-
-
-        //    //try to get a picture with the specified id
-
-
-
-
-        //}
-
-
         public virtual async Task<IActionResult> Edit(int id)
         {
 
@@ -180,37 +102,37 @@ namespace Wombit.Plugin.Widgets.BetterDocs.Controllers
             return View("~/Plugins/Widgets.BetterDocs/Views/Edit.cshtml", model);
         }
 
-        [HttpPost, ParameterBasedOnFormName("save-continue", "continueEditing")]
-        public virtual async Task<IActionResult> Edit(DocumentModel model, bool continueEditing)
-        {
+        //[HttpPost, ParameterBasedOnFormName("save-continue", "continueEditing")]
+        //public virtual async Task<IActionResult> Edit(DocumentModel model, bool continueEditing)
+        //{
 
-            var document = await _documentService.GetDocumentByIdAsync(model.Id);
-            if (document == null)
-                return RedirectToAction("Configure");
+        //    var document = await _documentService.GetDocumentByIdAsync(model.Id);
+        //    if (document == null)
+        //        return RedirectToAction("Configure");
 
-            if (ModelState.IsValid)
-            {
+        //    if (ModelState.IsValid)
+        //    {
 
-                //document = model.ToEntity(document);
-                //await _documentService.UpdateAsync(document);
+        //        //document = model.ToEntity(document);
+        //        //await _documentService.UpdateAsync(document);
 
 
-                await _documentFileService.UpdateDocumentInfoAsync(document.Id,
-                await _documentFileService.LoadDocumentBinaryAsync(document),
-                    document.ContentType,
-                    document.SeoFilename,
-                    model.Title);
+        //        await _documentFileService.UpdateDocumentInfoAsync(document.Id,
+        //        await _documentFileService.LoadDocumentBinaryAsync(document),
+        //            document.ContentType,
+        //            document.SeoFilename,
+        //            model.Title);
 
-                if (!continueEditing)
-                    return RedirectToAction("Configure");
+        //        if (!continueEditing)
+        //            return RedirectToAction("Configure");
 
-                return RedirectToAction("Edit", new { id = document.Id });
-            }
+        //        return RedirectToAction("Edit", new { id = document.Id });
+        //    }
 
-            model = await _documentModelFactory.PrepareDocumentModelAsync(model, document);
+        //    model = await _documentModelFactory.PrepareDocumentModelAsync(model, document);
 
-            return View("~/Plugins/Widgets.BetterDocs/Views/Edit.cshtml", model);
-        }
+        //    return View("~/Plugins/Widgets.BetterDocs/Views/Edit.cshtml", model);
+        //}
 
         [HttpPost]
         public virtual async Task<IActionResult> Delete(int id)
@@ -428,7 +350,7 @@ namespace Wombit.Plugin.Widgets.BetterDocs.Controllers
             };
         }
 
-        public virtual async Task<IActionResult> AsyncUpdate(DocumentModel model, bool shouldContinue)
+        public virtual async Task<IActionResult> AsyncUpdateInfo(DocumentModel model, bool shouldContinue)
         {
             var document = await _documentService.GetDocumentByIdAsync(model.Id);
             if (document == null)
@@ -442,9 +364,16 @@ namespace Wombit.Plugin.Widgets.BetterDocs.Controllers
                     document.ContentType,
                     document.SeoFilename,
                     model.Title);
-              
-                    return RedirectToAction("Configure");
 
+                if (!shouldContinue)
+                {
+                    return RedirectToAction("Configure");
+                }
+                else
+                {
+                    return RedirectToAction("Edit", new { id = document.Id });
+                }
+                 
             }
 
             model = await _documentModelFactory.PrepareDocumentModelAsync(model, document);
@@ -452,43 +381,5 @@ namespace Wombit.Plugin.Widgets.BetterDocs.Controllers
             return View("~/Plugins/Widgets.BetterDocs/Views/Edit.cshtml", model);
 
         }
-
-        //[HttpPost, ParameterBasedOnFormName("save-continue", "continueEditing")]
-        //public virtual async Task<IActionResult> AsyncUpdateContinue(DocumentModel model)
-        //{
-        //    var document = AsyncUpdateInfo(model, true);
-        //}
-
-        //protected virtual async Task<IActionResult> AsyncUpdateInfo(DocumentModel model, bool shouldContinue)
-        //{
-        //    var document = await _documentService.GetDocumentByIdAsync(model.Id);
-        //    if (document == null)
-        //        return RedirectToAction("Configure");
-
-
-
-        //    if (ModelState.IsValid)
-        //    {
-
-        //        await _documentFileService.UpdateDocumentInfoAsync(document.Id,
-        //        await _documentFileService.LoadDocumentBinaryAsync(document),
-        //            document.ContentType,
-        //            document.SeoFilename,
-        //            model.Title);
-
-        //        if (shouldContinue)
-        //        {
-        //            return RedirectToAction("Edit", new { id = document.Id });
-        //        }
-        //        else
-        //        {
-        //            return RedirectToAction("Configure");
-        //        }
-        //    }
-
-        //    model = await _documentModelFactory.PrepareDocumentModelAsync(model, document);
-
-        //    return View("~/Plugins/Widgets.BetterDocs/Views/Edit.cshtml", model);
-        //}
     }
 }

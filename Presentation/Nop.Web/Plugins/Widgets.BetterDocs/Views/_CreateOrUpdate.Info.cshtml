@@ -272,9 +272,7 @@
 
                   if(pendingUpload == 1 && @Model.Id > 0){
 
-                        window.location.href='@Url.Action("AsyncUpdate","BetterDocs",new { id = "ID", title = "TITLE", shouldContinue = "SHOULDCONTINUE"})'
-                        .replace("ID", @Model.Id)
-                        .replace("TITLE", el.value)
+                        window.location.href='@Url.Action("AsyncUpdate","BetterDocs",new { shouldContinue = "SHOULDCONTINUE"})'
                         .replace("SHOULDCONTINUE", shouldContinue);
 
                   }
@@ -302,9 +300,7 @@
 
                   if(pendingUpload == 1 && @Model.Id > 0){
 
-                         window.location.href='@Url.Action("AsyncUpdateContinue","BetterDocs",new { id = "ID", title = "TITLE", shouldContinue = "SHOULDCONTINUE"})'
-                        .replace("ID", @Model.Id)
-                        .replace("TITLE", el.value)
+                         window.location.href='@Url.Action("AsyncUpdate","BetterDocs",new { shouldContinue = "SHOULDCONTINUE"})'
                         .replace("SHOULDCONTINUE", shouldContinue);
 
                   }
