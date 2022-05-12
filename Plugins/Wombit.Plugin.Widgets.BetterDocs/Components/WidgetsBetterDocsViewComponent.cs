@@ -72,7 +72,7 @@ namespace Wombit.Plugin.Widgets.BetterDocs.Components
             //if (widgetZone.Equals(AdminWidgetZones.ProductDetailsBlock))
             //{
                 
-                var documentList = await _documentService.GetDocumentsByEntityId(entity.Id, "Product");
+                var documentList = await _documentService.GetDocumentsByMappingEntityId(entity.Id, "Product");
 
                 var model = JsonConvert.SerializeObject(documentList, new JsonSerializerSettings
                 {

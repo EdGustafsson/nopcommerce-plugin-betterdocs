@@ -32,7 +32,6 @@ namespace Wombit.Plugin.Widgets.BetterDocs.Controllers
         private readonly IPermissionService _permissionService;
         private readonly IWorkContext _workContext;
         private readonly IDownloadService _downloadService;
-        private readonly IDocumentFileService _documentFileService;
 
         public BetterDocsController(
            IDocumentService documentService,
@@ -40,8 +39,7 @@ namespace Wombit.Plugin.Widgets.BetterDocs.Controllers
            IProductService productService,
            IPermissionService permissionService,
            IWorkContext workContext,
-           IDownloadService downloadService,
-           IDocumentFileService documentFileService)
+           IDownloadService downloadService)
         {
             _documentService = documentService;
             _documentModelFactory = documentModelFactory;
@@ -49,7 +47,6 @@ namespace Wombit.Plugin.Widgets.BetterDocs.Controllers
             _permissionService = permissionService;
             _workContext = workContext;
             _downloadService = downloadService;
-            _documentFileService = documentFileService;
         }
         public async Task<IActionResult> Configure()
         {
@@ -117,8 +114,8 @@ namespace Wombit.Plugin.Widgets.BetterDocs.Controllers
         //        //await _documentService.UpdateAsync(document);
 
 
-        //        await _documentFileService.UpdateDocumentInfoAsync(document.Id,
-        //        await _documentFileService.LoadDocumentBinaryAsync(document),
+        //        await _documentService.UpdateDocumentInfoAsync(document.Id,
+        //        await _documentService.LoadDocumentBinaryAsync(document),
         //            document.ContentType,
         //            document.SeoFilename,
         //            model.Title);
@@ -252,7 +249,6 @@ namespace Wombit.Plugin.Widgets.BetterDocs.Controllers
         [HttpPost]
         //do not validate request token (XSRF)
         [IgnoreAntiforgeryToken]
-        /// <returns>A task that represents the asynchronous operation</returns>
         public virtual async Task<IActionResult> AsyncUpload()
         {
             var httpPostedFile = Request.Form.Files.FirstOrDefault();
@@ -294,11 +290,11 @@ namespace Wombit.Plugin.Widgets.BetterDocs.Controllers
             {
                 document.Id = Int32.Parse(existingId);
 
-                await _documentFileService.UpdateDocumentAsync(document.Id, httpPostedFile, title, uploadedOnUTC, uploadedBy, displayOrder, qqFileName);
+                await _documentService.UpdateDocumentAsync(document.Id, httpPostedFile, title, uploadedOnUTC, uploadedBy, displayOrder, qqFileName);
             }
             else
             {
-                document = await _documentFileService.InsertDocumentAsync(httpPostedFile, title, uploadedOnUTC, uploadedBy, displayOrder, qqFileName);
+                document = await _documentService.InsertDocumentAsync(httpPostedFile, title, uploadedOnUTC, uploadedBy, displayOrder, qqFileName);
             }
 
 
@@ -312,7 +308,7 @@ namespace Wombit.Plugin.Widgets.BetterDocs.Controllers
                 {
                     success = true,
                     documentId = document.Id,
-                    //documentUrl = (await _documentFileService.GetDocumentUrlAsync(document)).Url'
+                    //documentUrl = (await _documentService.GetDocumentUrlAsync(document)).Url'
                     documentUrl = Url.Action("DownloadFile", new { id = document.Id }),
                     Url = "Configure"
                 });
@@ -323,7 +319,7 @@ namespace Wombit.Plugin.Widgets.BetterDocs.Controllers
                 {
                     success = true,
                     documentId = document.Id,
-                    //documentUrl = (await _documentFileService.GetDocumentUrlAsync(document)).Url'
+                    //documentUrl = (await _documentService.GetDocumentUrlAsync(document)).Url'
                     documentUrl = Url.Action("DownloadFile", new { id = document.Id }),
                     Url = "Edit"
                 });
@@ -338,7 +334,7 @@ namespace Wombit.Plugin.Widgets.BetterDocs.Controllers
             if (document == null)
                 return Content("No download record found with the specified id");
 
-            var documentBinary = await _documentFileService.LoadDocumentFromFileAsync(id, document.ContentType);
+            var documentBinary = await _documentService.LoadDocumentFromFileAsync(id, document.ContentType);
 
             var fileName = !string.IsNullOrWhiteSpace(document.SeoFilename) ? document.SeoFilename : document.Id.ToString();
             var contentType = !string.IsNullOrWhiteSpace(document.ContentType)
@@ -359,8 +355,8 @@ namespace Wombit.Plugin.Widgets.BetterDocs.Controllers
             if (ModelState.IsValid)
             {
 
-                await _documentFileService.UpdateDocumentInfoAsync(document.Id,
-                await _documentFileService.LoadDocumentBinaryAsync(document),
+                await _documentService.UpdateDocumentInfoAsync(document.Id,
+                await _documentService.LoadDocumentBinaryAsync(document),
                     document.ContentType,
                     document.SeoFilename,
                     model.Title);

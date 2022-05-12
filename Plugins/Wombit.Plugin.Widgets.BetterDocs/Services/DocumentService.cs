@@ -19,6 +19,11 @@ using Nop.Services.Security;
 using Nop.Services.Stores;
 using System.Linq.Expressions;
 using System.Linq.Dynamic;
+using Microsoft.AspNetCore.Http;
+using Nop.Core.Infrastructure;
+using SkiaSharp;
+using Nop.Services.Media;
+using Nop.Core.Domain.Media;
 
 namespace Wombit.Plugin.Widgets.BetterDocs.Services
 {
@@ -30,6 +35,8 @@ namespace Wombit.Plugin.Widgets.BetterDocs.Services
         private readonly IRepository<DocumentMapping> _documentMappingRepository;
         private readonly IStoreContext _storeContext;
         private readonly IStoreMappingService _storeMappingService;
+        private readonly INopFileProvider _fileProvider;
+        private readonly IDownloadService _downloadService;
 
 
         public DocumentService(
@@ -38,7 +45,9 @@ namespace Wombit.Plugin.Widgets.BetterDocs.Services
             IRepository<Product> productRepository,
             IRepository<DocumentMapping> documentMappingRepository,
             IStoreContext storeContext,
-            IStoreMappingService storeMappingService)
+            IStoreMappingService storeMappingService,
+            INopFileProvider fileProvider,
+            IDownloadService downloadService)
         {
             _documentRepository = documentRepository;
             _eventPublisher = eventPublisher;
@@ -46,56 +55,8 @@ namespace Wombit.Plugin.Widgets.BetterDocs.Services
             _documentMappingRepository = documentMappingRepository;
             _storeContext = storeContext;
             _storeMappingService = storeMappingService;
-        }
-
-
-        public virtual async Task InsertAsync(Document document)
-        {
-            if (document == null)
-                throw new ArgumentNullException(nameof(document));
-
-            await _documentRepository.InsertAsync(document);
-
-            await _eventPublisher.EntityInsertedAsync(document);
-        }
-
-        public virtual async Task UpdateAsync(Document document)
-        {
-            if (document == null)
-                throw new ArgumentNullException(nameof(document));
-
-            await _documentRepository.UpdateAsync(document);
-
-            await _eventPublisher.EntityUpdatedAsync(document);
-        }
-
-        public virtual async Task DeleteAsync(Document document)
-        {
-            if (document == null)
-                throw new ArgumentNullException(nameof(document));
-
-            await _documentRepository.DeleteAsync(document);
-
-            await _eventPublisher.EntityDeletedAsync(document);
-        }
-
-        //public virtual async Task<Document> GetDocumentAsync(int id)
-        //{
-        //    if (id == 0)
-        //        return null;
-
-        //    return await _documentRepository.GetByIdAsync(id);
-        //}
-
-        public virtual async Task<IList<Document>> GetDocumentsAsync()
-        {
-
-            return await _documentRepository.GetAllAsync(query =>
-            {
-                query = query.Where(point => point.Title != null);
-
-                return query.OrderBy(t => t.DisplayOrder);
-            });
+            _fileProvider = fileProvider;
+            _downloadService = downloadService;
         }
 
         public virtual async Task<IPagedList<Document>> GetAllDocumentsAsync(int id = 0, int pageIndex = 0, int pageSize = int.MaxValue)
@@ -121,9 +82,147 @@ namespace Wombit.Plugin.Widgets.BetterDocs.Services
         {
             return await _documentRepository.GetByIdsAsync(documentIds, includeDeleted: false);
         }
+        public virtual async Task<Document> InsertDocumentAsync(IFormFile formFile, string title, DateTime uploadedOnUTC, string uploadedBy, int displayOrder, string defaultFileName = "", string virtualPath = "")
+        {
+
+            var fileName = formFile.FileName;
+            if (string.IsNullOrEmpty(fileName) && !string.IsNullOrEmpty(defaultFileName))
+                fileName = defaultFileName;
+
+            //remove path (passed in IE)
+            fileName = _fileProvider.GetFileName(fileName);
+
+            var contentType = formFile.ContentType;
+
+            var fileExtension = _fileProvider.GetFileExtension(fileName);
+            if (!string.IsNullOrEmpty(fileExtension))
+                fileExtension = fileExtension.ToLowerInvariant();
+
+            var document = await InsertDocumentAsync(await _downloadService.GetDownloadBitsAsync(formFile), title, uploadedOnUTC, uploadedBy, displayOrder, contentType, fileExtension, _fileProvider.GetFileNameWithoutExtension(fileName));
+
+            if (string.IsNullOrEmpty(virtualPath))
+                return document;
+
+            return document;
+        }
+
+        public virtual async Task<Document> InsertDocumentAsync(byte[] documentBinary, string title, DateTime uploadedOnUTC, string uploadedBy, int displayOrder, string contentType, string extension, string seoFilename, bool validateBinary = true)
+        {
+            contentType = CommonHelper.EnsureNotNull(contentType);
+            contentType = CommonHelper.EnsureMaximumLength(contentType, 20);
+
+            seoFilename = CommonHelper.EnsureMaximumLength(seoFilename, 100);
+
+            var document = new Document
+            {
+                Title = title,
+                UploadedOnUTC = uploadedOnUTC,
+                UploadedBy = uploadedBy,
+                DisplayOrder = displayOrder,
+                ContentType = contentType,
+                SeoFilename = seoFilename,
+                Extension = extension,
+            };
+
+            await _documentRepository.InsertAsync(document);
+
+            await SaveDocumentInFileAsync(document.Id, documentBinary, contentType);
+
+            return document;
+        }
+        public virtual async Task<Document> UpdateDocumentInfoAsync(Document document, byte[] documentBinary)
+        {
+            if (document == null)
+                return null;
+
+            var seoFilename = CommonHelper.EnsureMaximumLength(document.SeoFilename, 100);
+
+            document.SeoFilename = seoFilename;
+
+            await _documentRepository.UpdateAsync(document);
+
+            await SaveDocumentInFileAsync(document.Id, documentBinary, document.ContentType);
+
+            return document;
+        }
+
+        public virtual async Task<Document> UpdateDocumentInfoAsync(int documentId, byte[] documentBinary, string contentType,
+         string seoFilename, string title)
+        {
+            contentType = CommonHelper.EnsureNotNull(contentType);
+            contentType = CommonHelper.EnsureMaximumLength(contentType, 20);
+
+            seoFilename = CommonHelper.EnsureMaximumLength(seoFilename, 100);
+
+            var document = await GetDocumentByIdAsync(documentId);
+            if (document == null)
+                return null;
+
+            document.ContentType = contentType;
+            document.SeoFilename = seoFilename;
+            document.Title = title;
+
+            await _documentRepository.UpdateAsync(document);
+
+            await SaveDocumentInFileAsync(document.Id, documentBinary, contentType);
+
+            return document;
+        }
+
+        public virtual async Task<Document> UpdateDocumentAsync(int documentId, IFormFile formFile, string title, DateTime uploadedOnUTC, string uploadedBy, int displayOrder, string defaultFileName = "", string virtualPath = "")
+        {
+            var fileName = formFile.FileName;
+            if (string.IsNullOrEmpty(fileName) && !string.IsNullOrEmpty(defaultFileName))
+                fileName = defaultFileName;
+
+            fileName = _fileProvider.GetFileName(fileName);
+
+            var contentType = formFile.ContentType;
+
+            var fileExtension = _fileProvider.GetFileExtension(fileName);
+            if (!string.IsNullOrEmpty(fileExtension))
+                fileExtension = fileExtension.ToLowerInvariant();
+
+            var document = await UpdateDocumentAsync(documentId, await _downloadService.GetDownloadBitsAsync(formFile), title, uploadedOnUTC, uploadedBy, displayOrder, contentType, fileExtension, _fileProvider.GetFileNameWithoutExtension(fileName));
+
+            if (string.IsNullOrEmpty(virtualPath))
+                return document;
+
+            return document;
+        }
+        public virtual async Task<Document> UpdateDocumentAsync(int documentId, byte[] documentBinary, string title, DateTime uploadedOnUTC, string uploadedBy, int displayOrder, string contentType, string extension, string seoFilename, bool validateBinary = true)
+        {
+            contentType = CommonHelper.EnsureNotNull(contentType);
+            contentType = CommonHelper.EnsureMaximumLength(contentType, 20);
+
+            seoFilename = CommonHelper.EnsureMaximumLength(seoFilename, 100);
+
+
+            var document = await GetDocumentByIdAsync(documentId);
+            if (document == null)
+                return null;
+
+            await DeletePictureFromFileSystemAsync(document);
+
+            document.ContentType = contentType;
+            document.SeoFilename = seoFilename;
+            document.Title = title;
+            document.UploadedOnUTC = uploadedOnUTC;
+            document.UploadedBy = uploadedBy;
+            document.DisplayOrder = displayOrder;
+            document.Extension = extension;
+
+            await _documentRepository.UpdateAsync(document);
+
+            await SaveDocumentInFileAsync(document.Id, documentBinary, contentType);
+
+            return document;
+        }
 
         public virtual async Task DeleteDocumentAsync(Document document)
         {
+            await DeletePictureFromFileSystemAsync(document);
+
             await _documentRepository.DeleteAsync(document);
         }
 
@@ -135,6 +234,55 @@ namespace Wombit.Plugin.Widgets.BetterDocs.Services
             foreach (var document in documents)
                 await DeleteDocumentAsync(document);
         }
+
+        protected virtual async Task SaveDocumentInFileAsync(int documentId, byte[] documentBinary, string contentType)
+        {
+            var lastPart = await GetFileExtensionFromContentTypeAsync(contentType);
+            var fileName = $"{documentId:0000000}_0.{lastPart}";
+            await _fileProvider.WriteAllBytesAsync(await GetDocumentLocalPathAsync(fileName), documentBinary);
+        }
+        public virtual async Task<byte[]> LoadDocumentFromFileAsync(int documentId, string contentType)
+        {
+            var lastPart = await GetFileExtensionFromContentTypeAsync(contentType);
+            var fileName = $"{documentId:0000000}_0.{lastPart}";
+            var filePath = await GetDocumentLocalPathAsync(fileName);
+
+            return await _fileProvider.ReadAllBytesAsync(filePath);
+        }
+        public virtual async Task DeletePictureFromFileSystemAsync(Document document)
+        {
+            if (document == null)
+                throw new ArgumentNullException(nameof(document));
+
+            var lastPart = await GetFileExtensionFromContentTypeAsync(document.ContentType);
+            var fileName = $"{document.Id:0000000}_0.{lastPart}";
+            var filePath = await GetDocumentLocalPathAsync(fileName);
+            _fileProvider.DeleteFile(filePath);
+        }
+        public virtual async Task<byte[]> LoadDocumentBinaryAsync(Document document)
+        {
+            if (document == null)
+                throw new ArgumentNullException(nameof(document));
+
+
+            return await LoadDocumentFromFileAsync(document.Id, document.ContentType); ;
+        }
+
+        protected virtual Task<string> GetDocumentLocalPathAsync(string fileName)
+        {
+            return Task.FromResult(_fileProvider.GetAbsolutePath("images", fileName));
+        }
+        protected virtual Task<string> GetFileExtensionFromContentTypeAsync(string contentType)
+        {
+            if (contentType == null)
+                return Task.FromResult<string>(null);
+
+            var parts = contentType.Split('/');
+            var lastPart = parts[^1];
+
+            return Task.FromResult(lastPart);
+        }
+
 
         public virtual async Task<IPagedList<DocumentMapping>> GetDocumentMappingsByDocumentIdAsync(int documentId, int pageIndex = 0, int pageSize = int.MaxValue, bool showHidden = false)
         {
@@ -186,69 +334,25 @@ namespace Wombit.Plugin.Widgets.BetterDocs.Services
             await _documentMappingRepository.InsertAsync(documentMapping);
         }
 
-        //public virtual async Task<IList<DocumentMapping>> GetDocumentMappingsByEntityId(int id)
-        //{
-        //    throw new NotImplementedException();
-        //}
-
-
         public virtual async Task<IList<DocumentMapping>> GetDocumentMappingsByEntityIdAsync(int entityId, string keyGroup)
         {
-
-            //var query = from dm in _documentMappingRepository.Table
-            //            where dm.EntityId == entityId && !d.Deleted
-            //            orderby dm.DisplayOrder, dm.Id
-            //            select dm;
-
-            //var documentMappingQuery = _documentMappingRepository.Table; ;
-
-            //query = query.Where(pc => documentMappingQuery.Any(dm => dm.DocumentId == pc.DocumentId));
-
-
-            //return await query.ToPagedListAsync(pageIndex, pageSize);
             if (entityId == 0)
                 return null;
 
             return await _documentMappingRepository.Table.Where(x => x.EntityId == entityId && x.KeyGroup == keyGroup).ToListAsync();
         }
 
-        public virtual async Task<IList<Document>> GetDocumentsByEntityId(int entityId, string keyGroup)
+        public virtual async Task<IList<Document>> GetDocumentsByMappingEntityId(int entityId, string keyGroup)
         {
 
             var documentMappings = await GetDocumentMappingsByEntityIdAsync(entityId, keyGroup);
-
-            //            select dm;
 
             var documentIds = documentMappings.Select(dm => dm.DocumentId);
 
             var documents = _documentRepository.Table.Where(d => documentIds.Contains(d.Id)).ToList();
 
-            //var documents = _documentRepository.Table.Where(d => d.Id == documentIds).ToList();
-
             return documents;
 
-
-
-           
-            ////if(keyGroup == "Product")
-            ////{
-            //var query = from d in _documentRepository.Table
-            //            join dm in _documentMappingRepository.Table on d.Id equals dm.DocumentId
-            //            where dm.EntityId == entityId && dm.KeyGroup == "Product"
-            //            orderby dm.DisplayOrder, dm.Id
-
-
-            //}
-
-
-            //var documents = await _documentRepository.GetAllAsync(async query =>
-
-            //   query = query.Where(d => 
-
-
-
-
-            //)
         }
     }
 }
