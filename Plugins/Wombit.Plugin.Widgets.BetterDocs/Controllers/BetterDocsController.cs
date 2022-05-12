@@ -115,56 +115,56 @@ namespace Wombit.Plugin.Widgets.BetterDocs.Controllers
         //    return View("~/Plugins/Widgets.BetterDocs/Views/Create.cshtml", model);
         //}
 
-        [HttpPost, ParameterBasedOnFormName("save-continue", "continueEditing")]
-        public virtual async Task<IActionResult> Create(int id, string title, bool continueEditing)
-        {
+        //[HttpPost, ParameterBasedOnFormName("save-continue", "continueEditing")]
+        //public virtual async Task<IActionResult> Create(int id, string title, bool continueEditing)
+        //{
 
-            var document = await _documentService.GetDocumentByIdAsync(id)
-               ?? throw new ArgumentException("No document found with the specified id");
+        //    var document = await _documentService.GetDocumentByIdAsync(id)
+        //       ?? throw new ArgumentException("No document found with the specified id");
 
-            if (ModelState.IsValid)
-            {
+        //    if (ModelState.IsValid)
+        //    {
 
-                //var document = model.ToEntity<Document>();
+        //        //var document = model.ToEntity<Document>();
 
-                document.UploadedOnUTC = DateTime.UtcNow;
-                document.UploadedBy = _workContext.GetCurrentCustomerAsync().Result.Username;
-                document.DisplayOrder = 1;
-                document.Title = title;
+        //        document.UploadedOnUTC = DateTime.UtcNow;
+        //        document.UploadedBy = _workContext.GetCurrentCustomerAsync().Result.Username;
+        //        document.DisplayOrder = 1;
+        //        document.Title = title;
 
-                //await _documentService.InsertAsync(document);
+        //        //await _documentService.InsertAsync(document);
 
-                //await _documentService.UpdateAsync(document);
+        //        //await _documentService.UpdateAsync(document);
 
-                await _documentFileService.UpdateDocumentAsync(document.Id,
-                await _documentFileService.LoadDocumentBinaryAsync(document),
-                    document.ContentType,
-                    document.SeoFilename,
-                    document.Title,
-                    document.UploadedOnUTC,
-                    document.UploadedBy,
-                    document.DisplayOrder);
-
-
-                if (!continueEditing)
-                    return RedirectToAction("Configure");
-
-                return RedirectToAction("Edit", new { id = document.Id });
-            }
-
-            var model = await _documentModelFactory.PrepareDocumentModelAsync(null, document);
-
-            model = await _documentModelFactory.PrepareDocumentModelAsync(model, null);
-
-            return View("~/Plugins/Widgets.BetterDocs/Views/Create.cshtml", model);
+        //        await _documentFileService.UpdateDocumentAsync(document.Id,
+        //        await _documentFileService.LoadDocumentBinaryAsync(document),
+        //            document.ContentType,
+        //            document.SeoFilename,
+        //            document.Title,
+        //            document.UploadedOnUTC,
+        //            document.UploadedBy,
+        //            document.DisplayOrder);
 
 
-            //try to get a picture with the specified id
+        //        if (!continueEditing)
+        //            return RedirectToAction("Configure");
+
+        //        return RedirectToAction("Edit", new { id = document.Id });
+        //    }
+
+        //    var model = await _documentModelFactory.PrepareDocumentModelAsync(null, document);
+
+        //    model = await _documentModelFactory.PrepareDocumentModelAsync(model, null);
+
+        //    return View("~/Plugins/Widgets.BetterDocs/Views/Create.cshtml", model);
+
+
+        //    //try to get a picture with the specified id
 
 
 
 
-        }
+        //}
 
 
         public virtual async Task<IActionResult> Edit(int id)
@@ -195,7 +195,7 @@ namespace Wombit.Plugin.Widgets.BetterDocs.Controllers
                 //await _documentService.UpdateAsync(document);
 
 
-                await _documentFileService.UpdateDocumentAsync(document.Id,
+                await _documentFileService.UpdateDocumentInfoAsync(document.Id,
                 await _documentFileService.LoadDocumentBinaryAsync(document),
                     document.ContentType,
                     document.SeoFilename,
@@ -333,9 +333,6 @@ namespace Wombit.Plugin.Widgets.BetterDocs.Controllers
         /// <returns>A task that represents the asynchronous operation</returns>
         public virtual async Task<IActionResult> AsyncUpload()
         {
-            //if (!await _permissionService.Authorize(StandardPermissionProvider.UploadPictures))
-            //    return Json(new { success = false, error = "You do not have required permissions" }, "text/plain");
-
             var httpPostedFile = Request.Form.Files.FirstOrDefault();
             if (httpPostedFile == null)
             {
@@ -345,40 +342,43 @@ namespace Wombit.Plugin.Widgets.BetterDocs.Controllers
                     message = "No file uploaded"
                 });
             }
-
             const string qqFileNameParameter = "qqfilename";
 
-            var shouldContinue = Request.Form.ContainsKey("shouldContinue")
-                ? Request.Form["shouldContinue"].ToString()
+            var existingId = Request.Form.ContainsKey("id")
+                ? Request.Form["id"].ToString()
                 : string.Empty;
+
+            var shouldContinue = Request.Form.ContainsKey("shouldContinue")
+               ? Request.Form["shouldContinue"].ToString()
+               : string.Empty;
 
             var title = Request.Form.ContainsKey("title")
                 ? Request.Form["title"].ToString()
                 : string.Empty;
 
-            if (title == null || title == "")
-            {
-                return Json(new
-                {
-                    success = false,
-                    message = "Please input a title"
-                });
-            }
-
             var qqFileName = Request.Form.ContainsKey(qqFileNameParameter)
                 ? Request.Form[qqFileNameParameter].ToString()
                 : string.Empty;
+
+
+            var document = new Document();
 
             var uploadedOnUTC = DateTime.UtcNow;
             var uploadedBy = _workContext.GetCurrentCustomerAsync().Result.Username;
             var displayOrder = 1;
 
-            var document = await _documentFileService.InsertDocumentAsync(httpPostedFile, title, uploadedOnUTC, uploadedBy, displayOrder, qqFileName);
 
+            if (existingId != "0")
+            {
+                document.Id = Int32.Parse(existingId);
 
+                await _documentFileService.UpdateDocumentAsync(document.Id, httpPostedFile, title, uploadedOnUTC, uploadedBy, displayOrder, qqFileName);
+            }
+            else
+            {
+                document = await _documentFileService.InsertDocumentAsync(httpPostedFile, title, uploadedOnUTC, uploadedBy, displayOrder, qqFileName);
+            }
 
-            //when returning JSON the mime-type must be set to text/plain
-            //otherwise some browsers will pop-up a "Save As" dialog.
 
             if (document == null)
                 return Json(new { success = false, message = "Wrong file format" });
@@ -409,82 +409,12 @@ namespace Wombit.Plugin.Widgets.BetterDocs.Controllers
         }
 
 
-        [HttpPost]
-        //do not validate request token (XSRF)
-        [IgnoreAntiforgeryToken]
-        /// <returns>A task that represents the asynchronous operation</returns>
-        public virtual async Task<IActionResult> AsyncUploadContinue()
-        {
-            //if (!await _permissionService.Authorize(StandardPermissionProvider.UploadPictures))
-            //    return Json(new { success = false, error = "You do not have required permissions" }, "text/plain");
-
-            var httpPostedFile = Request.Form.Files.FirstOrDefault();
-            if (httpPostedFile == null)
-            {
-                return Json(new
-                {
-                    success = false,
-                    message = "No file uploaded"
-                });
-            }
-
-            const string qqFileNameParameter = "qqfilename";
-
-            var title = Request.Form.ContainsKey("title")
-                ? Request.Form["title"].ToString()
-                : string.Empty;
-
-            if (title == null || title == "")
-            {
-                return Json(new
-                {
-                    success = false,
-                    message = "Please input a title"
-                });
-            }
-
-            var qqFileName = Request.Form.ContainsKey(qqFileNameParameter)
-                ? Request.Form[qqFileNameParameter].ToString()
-                : string.Empty;
-
-            var uploadedOnUTC = DateTime.UtcNow;
-            var uploadedBy = _workContext.GetCurrentCustomerAsync().Result.Username;
-            var displayOrder = 1;
-
-            var document = await _documentFileService.InsertDocumentAsync(httpPostedFile, title, uploadedOnUTC, uploadedBy, displayOrder, qqFileName);
-
-
-
-            //when returning JSON the mime-type must be set to text/plain
-            //otherwise some browsers will pop-up a "Save As" dialog.
-
-            if (document == null)
-                return Json(new { success = false, message = "Wrong file format" });
-
-
-
-            return Json(new
-            {
-                success = true,
-                documentId = document.Id,
-                //documentUrl = (await _documentFileService.GetDocumentUrlAsync(document)).Url'
-                documentUrl = Url.Action("DownloadFile", new { id = document.Id }),
-                Url = "Edit"
-            });
-        }
-
         public virtual async Task<IActionResult> DownloadFile(int id)
         {
-
-            // Fetch document binary from file system
 
             var document = await _documentService.GetDocumentByIdAsync(id);
             if (document == null)
                 return Content("No download record found with the specified id");
-
-            ////use stored data
-            //if (document.DownloadBinary == null)
-            //    return Content($"Download data is not available any more. Download GD={download.Id}");
 
             var documentBinary = await _documentFileService.LoadDocumentFromFileAsync(id, document.ContentType);
 
@@ -498,7 +428,7 @@ namespace Wombit.Plugin.Widgets.BetterDocs.Controllers
             };
         }
 
-        public virtual async Task<IActionResult> AsyncUpdate(DocumentModel model, bool continueEditing)
+        public virtual async Task<IActionResult> AsyncUpdate(DocumentModel model, bool shouldContinue)
         {
             var document = await _documentService.GetDocumentByIdAsync(model.Id);
             if (document == null)
@@ -507,28 +437,58 @@ namespace Wombit.Plugin.Widgets.BetterDocs.Controllers
             if (ModelState.IsValid)
             {
 
-                //document = model.ToEntity(document);
-                //await _documentService.UpdateAsync(document);
-
-
-                await _documentFileService.UpdateDocumentAsync(document.Id,
+                await _documentFileService.UpdateDocumentInfoAsync(document.Id,
                 await _documentFileService.LoadDocumentBinaryAsync(document),
                     document.ContentType,
                     document.SeoFilename,
                     model.Title);
-
-                if (!continueEditing)
+              
                     return RedirectToAction("Configure");
 
-                return RedirectToAction("Edit", new { id = document.Id });
             }
 
             model = await _documentModelFactory.PrepareDocumentModelAsync(model, document);
 
             return View("~/Plugins/Widgets.BetterDocs/Views/Edit.cshtml", model);
+
         }
 
+        //[HttpPost, ParameterBasedOnFormName("save-continue", "continueEditing")]
+        //public virtual async Task<IActionResult> AsyncUpdateContinue(DocumentModel model)
+        //{
+        //    var document = AsyncUpdateInfo(model, true);
+        //}
+
+        //protected virtual async Task<IActionResult> AsyncUpdateInfo(DocumentModel model, bool shouldContinue)
+        //{
+        //    var document = await _documentService.GetDocumentByIdAsync(model.Id);
+        //    if (document == null)
+        //        return RedirectToAction("Configure");
 
 
+
+        //    if (ModelState.IsValid)
+        //    {
+
+        //        await _documentFileService.UpdateDocumentInfoAsync(document.Id,
+        //        await _documentFileService.LoadDocumentBinaryAsync(document),
+        //            document.ContentType,
+        //            document.SeoFilename,
+        //            model.Title);
+
+        //        if (shouldContinue)
+        //        {
+        //            return RedirectToAction("Edit", new { id = document.Id });
+        //        }
+        //        else
+        //        {
+        //            return RedirectToAction("Configure");
+        //        }
+        //    }
+
+        //    model = await _documentModelFactory.PrepareDocumentModelAsync(model, document);
+
+        //    return View("~/Plugins/Widgets.BetterDocs/Views/Edit.cshtml", model);
+        //}
     }
 }

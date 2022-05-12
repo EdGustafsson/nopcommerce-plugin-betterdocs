@@ -15,13 +15,13 @@ namespace Wombit.Plugin.Widgets.BetterDocs.Services
         //Task<byte[]> ValidateDocumentAsync(byte[] documentBinary, string mimeType);
         //Task<(string Url, Document Document)> GetDocumentUrlAsync(Document document);
         Task<byte[]> LoadDocumentFromFileAsync(int documentId, string extension);
-        Task<Document> UpdateDocumentAsync(int documentId, byte[] documentBinary, string contentType,
+        Task<Document> UpdateDocumentInfoAsync(int documentId, byte[] documentBinary, string contentType,
         string seoFilename, string title);
 
         Task<byte[]> LoadDocumentBinaryAsync(Document document);
-        Task<Document> UpdateDocumentAsync(int documentId, byte[] documentBinary, string contentType,
-        string seoFilename, string title, DateTime uploadedOnUTC, string uploadedBy, int displayOrder);
+        Task<Document> UpdateDocumentAsync(int documentId, IFormFile formFile, string title, DateTime uploadedOnUTC, string uploadedBy, int displayOrder, string defaultFileName = "", string virtualPath = "");
 
         Task<string> GetFileExtensionFromContentTypeAsync(string contentType);
+        Task<Document> UpdateDocumentAsync(int documentId, byte[] documentBinary, string title, DateTime uploadedOnUTC, string uploadedBy, int displayOrder, string contentType, string extension, string seoFilename, bool validateBinary = true);
     }
 }

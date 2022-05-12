@@ -1,14 +1,14 @@
 @model DocumentModel
 @{
     
-    ViewBag.PageTitle = T("Plugins.Widgets.BetterDocs.Admin.Fields.Products.Edit").Text;
+    ViewBag.PageTitle = T("Plugins.Widgets.BetterDocs.Admin.Fields.Documents.Edit").Text;
     Html.SetActiveMenuItemSystemName("Documents");
 }
 
-<form asp-controller="BetterDocs" asp-action="Edit" method="post" id="document-form">
+<form asp-controller="BetterDocs" id="document-form">
     <div class="content-header clearfix">
         <h1 class="float-left">
-            @T("Plugins.Widgets.BetterDocs.Admin.Fields.Products.Edit") - @Model.Title
+            @T("Plugins.Widgets.BetterDocs.Admin.Fields.Documents.Edit") - @Model.Title
             <small>
                 <i class="fas fa-arrow-circle-left"></i>
                 <a asp-action="Configure">@T("Plugins.Widgets.BetterDocs.Admin.Fields.BackToList")</a>

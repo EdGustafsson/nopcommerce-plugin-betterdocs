@@ -32,7 +32,7 @@
     Html.SetActiveMenuItemSystemName("Documents");
 }
 
-<form asp-controller="BetterDocs" asp-action="Create" method="post" id="document-form">
+<form asp-controller="BetterDocs" id="document-form">
     <div class="content-header clearfix">
         <h1 class="float-left">
             @T("Plugins.Widgets.BetterDocs.Admin.Fields.Documents.AddNew")
@@ -53,7 +53,7 @@
                 @T("Admin.Common.Save")
             </button>
 
-            <button type="submit" name="save-continue" class="btn btn-primary" id="trigger-upload-continue">
+            <button name="save-continue" class="btn btn-primary" id="trigger-upload-continue">
                 <i class="far fa-save"></i>
                 @T("Admin.Common.SaveContinue")
             </button>

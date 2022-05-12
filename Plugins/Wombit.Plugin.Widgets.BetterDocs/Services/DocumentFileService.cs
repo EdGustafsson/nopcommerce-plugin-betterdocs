@@ -58,17 +58,17 @@ namespace Wombit.Plugin.Widgets.BetterDocs.Services
         
         // Gör alla mimetype till contenttype och fixa databas med extensions
 
-        protected virtual Task<string> GetDocumentsPathUrlAsync(string storeLocation = null)
-        {
-            var pathBase = _httpContextAccessor.HttpContext.Request.PathBase.Value ?? string.Empty;
-            var documentsPathUrl = _mediaSettings.UseAbsoluteImagePath ? storeLocation : $"{pathBase}/";
-            documentsPathUrl = string.IsNullOrEmpty(documentsPathUrl) ? _webHelper.GetStoreLocation() : documentsPathUrl;
-            documentsPathUrl += "images/";
+        //protected virtual Task<string> GetDocumentsPathUrlAsync(string storeLocation = null)
+        //{
+        //    var pathBase = _httpContextAccessor.HttpContext.Request.PathBase.Value ?? string.Empty;
+        //    var documentsPathUrl = _mediaSettings.UseAbsoluteImagePath ? storeLocation : $"{pathBase}/";
+        //    documentsPathUrl = string.IsNullOrEmpty(documentsPathUrl) ? _webHelper.GetStoreLocation() : documentsPathUrl;
+        //    documentsPathUrl += "images/";
 
-            return Task.FromResult(documentsPathUrl);
-        }
+        //    return Task.FromResult(documentsPathUrl);
+        //}
 
-        public virtual async Task<Document> InsertDocumentAsync(IFormFile formFile, string title, DateTime uploadedOnUTC, string uploadedBy, int displayorder, string defaultFileName = "", string virtualPath = "")
+        public virtual async Task<Document> InsertDocumentAsync(IFormFile formFile, string title, DateTime uploadedOnUTC, string uploadedBy, int displayOrder, string defaultFileName = "", string virtualPath = "")
         {
 
             var fileName = formFile.FileName;
@@ -84,14 +84,14 @@ namespace Wombit.Plugin.Widgets.BetterDocs.Services
             if (!string.IsNullOrEmpty(fileExtension))
                 fileExtension = fileExtension.ToLowerInvariant();
 
-            var document = await InsertDocumentAsync(await _downloadService.GetDownloadBitsAsync(formFile), title, uploadedOnUTC, uploadedBy, displayorder, contentType, fileExtension, _fileProvider.GetFileNameWithoutExtension(fileName));
+            var document = await InsertDocumentAsync(await _downloadService.GetDownloadBitsAsync(formFile), title, uploadedOnUTC, uploadedBy, displayOrder, contentType, fileExtension, _fileProvider.GetFileNameWithoutExtension(fileName));
 
             if (string.IsNullOrEmpty(virtualPath))
                 return document;
 
             //document.VirtualPath = _fileProvider.GetVirtualPath(virtualPath);
 
-            await UpdateDocumentAsync(document, await _downloadService.GetDownloadBitsAsync(formFile));
+            //await UpdateDocumentAsync(document, await _downloadService.GetDownloadBitsAsync(formFile));
 
             return document;
         }
@@ -135,21 +135,16 @@ namespace Wombit.Plugin.Widgets.BetterDocs.Services
         }
 
 
-        public virtual async Task<Document> UpdateDocumentAsync(Document document, byte[] documentBinary)
+        public virtual async Task<Document> UpdateDocumentInfoAsync(Document document, byte[] documentBinary)
         {
             if (document == null)
                 return null;
 
             var seoFilename = CommonHelper.EnsureMaximumLength(document.SeoFilename, 100);
 
-            //delete old thumbs if a picture has been changed
-            //if (seoFilename != document.SeoFilename)
-            //    await DeletePictureThumbsAsync(picture);
-
             document.SeoFilename = seoFilename;
 
             await _documentRepository.UpdateAsync(document);
-            //await UpdatePictureBinaryAsync(picture, await IsStoreInDbAsync() ? (await GetPictureBinaryByPictureIdAsync(picture.Id)).BinaryData : Array.Empty<byte>());
 
             await SaveDocumentInFileAsync(document.Id, documentBinary, document.ContentType);
 
@@ -167,7 +162,7 @@ namespace Wombit.Plugin.Widgets.BetterDocs.Services
 
        
 
-        public virtual async Task<Document> UpdateDocumentAsync(int documentId, byte[] documentBinary, string contentType,
+        public virtual async Task<Document> UpdateDocumentInfoAsync(int documentId, byte[] documentBinary, string contentType,
          string seoFilename, string title)
         {
             contentType = CommonHelper.EnsureNotNull(contentType);
@@ -193,128 +188,6 @@ namespace Wombit.Plugin.Widgets.BetterDocs.Services
 
             return document;
         }
-
-
-
-        //public virtual async Task<(string Url, Document Picture)> GetPictureUrlAsync(Document document)
-        //{
-
-
-        //    byte[] pictureBinary = null;
-
-
-        //    var seoFileName = document.SeoFilename; 
-
-        //    //var lastPart = await GetFileExtensionFromMimeTypeAsync(picture.MimeType);
-
-        //    string fileName;
-        //    if (targetSize == 0)
-        //    {
-        //        fileName = !string.IsNullOrEmpty(seoFileName)
-        //            ? $"{document.Id:0000000}_{seoFileName}.{document.MimeType}"
-        //            : $"{document.Id:0000000}.{document.MimeType}";
-
-        //        var thumbFilePath = await GetDocumentLocalPathAsync(fileName);
-        //        //if (await GeneratedThumbExistsAsync(thumbFilePath, thumbFileName))
-        //        return (await GetThumbUrlAsync(thumbFileName, storeLocation), picture);
-
-        //        pictureBinary ??= await LoadPictureBinaryAsync(picture);
-
-        //        //the named mutex helps to avoid creating the same files in different threads,
-        //        //and does not decrease performance significantly, because the code is blocked only for the specific file.
-        //        //you should be very careful, mutexes cannot be used in with the await operation
-        //        //we can't use semaphore here, because it produces PlatformNotSupportedException exception on UNIX based systems
-        //        using var mutex = new Mutex(false, thumbFileName);
-        //        mutex.WaitOne();
-        //        try
-        //        {
-        //            SaveThumbAsync(thumbFilePath, thumbFileName, string.Empty, pictureBinary).Wait();
-        //        }
-        //        finally
-        //        {
-        //            mutex.ReleaseMutex();
-        //        }
-        //    }
-        //    else
-        //    {
-        //        fileName = !string.IsNullOrEmpty(seoFileName)
-        //            ? $"{picture.Id:0000000}_{seoFileName}_{targetSize}.{lastPart}"
-        //            : $"{picture.Id:0000000}_{targetSize}.{lastPart}";
-
-        //        var thumbFilePath = await GetThumbLocalPathAsync(thumbFileName);
-        //        if (await GeneratedThumbExistsAsync(thumbFilePath, thumbFileName))
-        //            return (await GetThumbUrlAsync(thumbFileName, storeLocation), picture);
-
-        //        pictureBinary ??= await LoadPictureBinaryAsync(picture);
-
-        //        //the named mutex helps to avoid creating the same files in different threads,
-        //        //and does not decrease performance significantly, because the code is blocked only for the specific file.
-        //        //you should be very careful, mutexes cannot be used in with the await operation
-        //        //we can't use semaphore here, because it produces PlatformNotSupportedException exception on UNIX based systems
-        //        using var mutex = new Mutex(false, thumbFileName);
-        //        mutex.WaitOne();
-        //        try
-        //        {
-        //            if (pictureBinary != null)
-        //            {
-        //                try
-        //                {
-        //                    using var image = SKBitmap.Decode(pictureBinary);
-        //                    var format = GetImageFormatByMimeType(picture.MimeType);
-        //                    pictureBinary = ImageResize(image, format, targetSize);
-        //                }
-        //                catch
-        //                {
-        //                }
-        //            }
-
-        //            SaveThumbAsync(thumbFilePath, thumbFileName, string.Empty, pictureBinary).Wait();
-        //        }
-        //        finally
-        //        {
-        //            mutex.ReleaseMutex();
-        //        }
-        //        //}
-
-        //        return (await GetDocuUrlAsync(fileName, storeLocation), document);
-        //}
-
-        //protected virtual async Task<string> GetPictureUrlAsync(string pictureFileName, string storeLocation = null)
-        //{
-        //    var url = await GetPicturesPathUrlAsync(storeLocation) + "thumbs/";
-
-        //    if (_mediaSettings.MultipleThumbDirectories)
-        //    {
-        //        //get the first two letters of the file name
-        //        var fileNameWithoutExtension = _fileProvider.GetFileNameWithoutExtension(thumbFileName);
-        //        if (fileNameWithoutExtension != null && fileNameWithoutExtension.Length > NopMediaDefaults.MultipleThumbDirectoriesLength)
-        //        {
-        //            var subDirectoryName = fileNameWithoutExtension[0..NopMediaDefaults.MultipleThumbDirectoriesLength];
-        //            url = url + subDirectoryName + "/";
-        //        }
-        //    }
-
-        //    url += thumbFileName;
-        //    return url;
-        //}
-        //protected virtual async Task<string> GetDocuUrlAsync(string fileName, string storeLocation = null)
-        //{
-        //    var url = await GetImagesPathUrlAsync(storeLocation) + "thumbs/";
-
-        //    if (_mediaSettings.MultipleThumbDirectories)
-        //    {
-        //        //get the first two letters of the file name
-        //        var fileNameWithoutExtension = _fileProvider.GetFileNameWithoutExtension(thumbFileName);
-        //        if (fileNameWithoutExtension != null && fileNameWithoutExtension.Length > NopMediaDefaults.MultipleThumbDirectoriesLength)
-        //        {
-        //            var subDirectoryName = fileNameWithoutExtension[0..NopMediaDefaults.MultipleThumbDirectoriesLength];
-        //            url = url + subDirectoryName + "/";
-        //        }
-        //    }
-
-        //    url += thumbFileName;
-        //    return url;
-        //}
 
         public virtual Task<string> GetFileExtensionFromContentTypeAsync(string contentType)
         {
@@ -377,6 +250,95 @@ namespace Wombit.Plugin.Widgets.BetterDocs.Services
             await SaveDocumentInFileAsync(document.Id, documentBinary, contentType);
 
             return document;
+        }
+
+        //public virtual async Task<Document> UpdateDocumentAsync(int documentId, FormFile formFile, string title, DateTime uploadedOnUTC, string uploadedBy, int displayorder, string defaultFileName = "", string virtualPath = "")
+        //{
+        //    var fileName = formFile.FileName;
+        //    if (string.IsNullOrEmpty(fileName) && !string.IsNullOrEmpty(defaultFileName))
+        //        fileName = defaultFileName;
+
+        //    //remove path (passed in IE)
+        //    fileName = _fileProvider.GetFileName(fileName);
+
+        //    var contentType = formFile.ContentType;
+
+        //    var fileExtension = _fileProvider.GetFileExtension(fileName);
+        //    if (!string.IsNullOrEmpty(fileExtension))
+        //        fileExtension = fileExtension.ToLowerInvariant();
+
+        //    var document = await UpdateDocumentAsync(documentId, await _downloadService.GetDownloadBitsAsync(formFile), title, uploadedOnUTC, uploadedBy, displayorder, contentType, fileExtension, _fileProvider.GetFileNameWithoutExtension(fileName));
+
+        //    if (string.IsNullOrEmpty(virtualPath))
+        //        return document;
+
+        //    //document.VirtualPath = _fileProvider.GetVirtualPath(virtualPath);
+
+        //    //await UpdateDocumentAsync(document, await _downloadService.GetDownloadBitsAsync(formFile));
+
+        //    return document;
+        //}
+
+        public virtual async Task<Document> UpdateDocumentAsync(int documentId, IFormFile formFile, string title, DateTime uploadedOnUTC, string uploadedBy, int displayOrder, string defaultFileName = "", string virtualPath = "")
+        {
+            var fileName = formFile.FileName;
+            if (string.IsNullOrEmpty(fileName) && !string.IsNullOrEmpty(defaultFileName))
+                fileName = defaultFileName;
+
+            fileName = _fileProvider.GetFileName(fileName);
+
+            var contentType = formFile.ContentType;
+
+            var fileExtension = _fileProvider.GetFileExtension(fileName);
+            if (!string.IsNullOrEmpty(fileExtension))
+                fileExtension = fileExtension.ToLowerInvariant();
+
+            var document = await UpdateDocumentAsync(documentId, await _downloadService.GetDownloadBitsAsync(formFile), title, uploadedOnUTC, uploadedBy, displayOrder, contentType, fileExtension, _fileProvider.GetFileNameWithoutExtension(fileName));
+
+            if (string.IsNullOrEmpty(virtualPath))
+                return document;
+
+            return document;
+        }
+        public virtual async Task<Document> UpdateDocumentAsync(int documentId,byte[] documentBinary, string title, DateTime uploadedOnUTC, string uploadedBy, int displayOrder, string contentType, string extension, string seoFilename, bool validateBinary = true)
+        {
+            contentType = CommonHelper.EnsureNotNull(contentType);
+            contentType = CommonHelper.EnsureMaximumLength(contentType, 20);
+
+            seoFilename = CommonHelper.EnsureMaximumLength(seoFilename, 100);
+
+
+            var document = await _documentService.GetDocumentByIdAsync(documentId);
+            if (document == null)
+                return null;
+
+            await DeletePictureOnFileSystemAsync(document);
+
+            document.ContentType = contentType;
+            document.SeoFilename = seoFilename;
+            document.Title = title;
+            document.UploadedOnUTC = uploadedOnUTC;
+            document.UploadedBy = uploadedBy;
+            document.DisplayOrder = displayOrder;
+            document.Extension = extension;
+
+            await _documentRepository.UpdateAsync(document);
+
+            await SaveDocumentInFileAsync(document.Id, documentBinary, contentType);
+
+            return document;
+        }
+
+
+        protected virtual async Task DeletePictureOnFileSystemAsync(Document document)
+        {
+            if (document == null)
+                throw new ArgumentNullException(nameof(document));
+
+            var lastPart = await GetFileExtensionFromContentTypeAsync(document.ContentType);
+            var fileName = $"{document.Id:0000000}_0.{lastPart}";
+            var filePath = await GetDocumentLocalPathAsync(fileName);
+            _fileProvider.DeleteFile(filePath);
         }
     }
 }

@@ -96,7 +96,10 @@ namespace Wombit.Plugin.Widgets.BetterDocs
                 ["Plugins.Widgets.BetterDocs.Admin.Fields.Documents.Edit"] = "Edit document details",
                 ["Plugins.Widgets.BetterDocs.Admin.Fields.Products.AddNew"] = "Add new product",
                 ["Plugins.Widgets.BetterDocs.Admin.Fields.BetterDocs"] = "BetterDocs",
-                ["Plugins.Widgets.BetterDocs.Admin.Fields.SaveBeforeEdit"] = "Please save document before adding products"
+                ["Plugins.Widgets.BetterDocs.Admin.Fields.SaveBeforeEdit"] = "Please save document before adding products",
+                ["Plugins.Widgets.BetterDocs.Admin.Fields.Upload"] = "Upload file",
+                ["Plugins.Widgets.BetterDocs.Admin.Fields.ReplaceUpload"] = "Replace file",
+                ["Plugins.Widgets.BetterDocs.Admin.Fields.Documents.Edit"] = "Edit Document"
 
             });
 
