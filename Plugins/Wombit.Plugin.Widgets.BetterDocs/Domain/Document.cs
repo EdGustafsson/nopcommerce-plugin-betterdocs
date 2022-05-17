@@ -12,7 +12,7 @@ namespace Wombit.Plugin.Widgets.BetterDocs.Domain
         public string ContentType { get; set; }
         public string Extension { get; set; }
         public DateTime UploadedOnUTC { get; set; }
-        public string UploadedBy { get; set; }
+        public int UploadedBy { get; set; }
 
 
     }

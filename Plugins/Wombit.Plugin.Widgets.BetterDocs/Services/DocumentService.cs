@@ -87,7 +87,7 @@ namespace Wombit.Plugin.Widgets.BetterDocs.Services
         {
             return await _documentRepository.GetByIdsAsync(documentIds, includeDeleted: false);
         }
-        public virtual async Task<Document> InsertDocumentAsync(IFormFile formFile, string title, DateTime uploadedOnUTC, string uploadedBy, int displayOrder, string defaultFileName = "", string virtualPath = "")
+        public virtual async Task<Document> InsertDocumentAsync(IFormFile formFile, string title, bool published, DateTime uploadedOnUTC, int uploadedBy, int displayOrder, string defaultFileName = "", string virtualPath = "")
         {
 
             var fileName = formFile.FileName;
@@ -103,7 +103,7 @@ namespace Wombit.Plugin.Widgets.BetterDocs.Services
             if (!string.IsNullOrEmpty(fileExtension))
                 fileExtension = fileExtension.ToLowerInvariant();
 
-            var document = await InsertDocumentAsync(await _downloadService.GetDownloadBitsAsync(formFile), title, uploadedOnUTC, uploadedBy, displayOrder, contentType, fileExtension, _fileProvider.GetFileNameWithoutExtension(fileName));
+            var document = await InsertDocumentAsync(await _downloadService.GetDownloadBitsAsync(formFile), title, published, uploadedOnUTC, uploadedBy, displayOrder, contentType, fileExtension, _fileProvider.GetFileNameWithoutExtension(fileName));
 
             if (string.IsNullOrEmpty(virtualPath))
                 return document;
@@ -111,7 +111,7 @@ namespace Wombit.Plugin.Widgets.BetterDocs.Services
             return document;
         }
 
-        public virtual async Task<Document> InsertDocumentAsync(byte[] documentBinary, string title, DateTime uploadedOnUTC, string uploadedBy, int displayOrder, string contentType, string extension, string seoFilename, bool validateBinary = true)
+        public virtual async Task<Document> InsertDocumentAsync(byte[] documentBinary, string title, bool published, DateTime uploadedOnUTC, int uploadedBy, int displayOrder, string contentType, string extension, string seoFilename, bool validateBinary = true)
         {
             contentType = CommonHelper.EnsureNotNull(contentType);
             contentType = CommonHelper.EnsureMaximumLength(contentType, 20);
@@ -121,6 +121,7 @@ namespace Wombit.Plugin.Widgets.BetterDocs.Services
             var document = new Document
             {
                 Title = title,
+                Published = published,
                 UploadedOnUTC = uploadedOnUTC,
                 UploadedBy = uploadedBy,
                 DisplayOrder = displayOrder,
@@ -144,15 +145,15 @@ namespace Wombit.Plugin.Widgets.BetterDocs.Services
 
             document.SeoFilename = seoFilename;
 
-            await _documentRepository.UpdateAsync(document);
-
             await SaveDocumentInFileAsync(document.Id, documentBinary, document.ContentType);
+
+            await _documentRepository.UpdateAsync(document);
 
             return document;
         }
 
         public virtual async Task<Document> UpdateDocumentInfoAsync(int documentId, byte[] documentBinary, string contentType,
-         string seoFilename, string title)
+         string seoFilename, string title, bool published)
         {
             contentType = CommonHelper.EnsureNotNull(contentType);
             contentType = CommonHelper.EnsureMaximumLength(contentType, 20);
@@ -166,6 +167,7 @@ namespace Wombit.Plugin.Widgets.BetterDocs.Services
             document.ContentType = contentType;
             document.SeoFilename = seoFilename;
             document.Title = title;
+            document.Published = published;
 
             await _documentRepository.UpdateAsync(document);
 
@@ -174,7 +176,7 @@ namespace Wombit.Plugin.Widgets.BetterDocs.Services
             return document;
         }
 
-        public virtual async Task<Document> UpdateDocumentAsync(int documentId, IFormFile formFile, string title, DateTime uploadedOnUTC, string uploadedBy, int displayOrder, string defaultFileName = "", string virtualPath = "")
+        public virtual async Task<Document> UpdateDocumentAsync(int documentId, IFormFile formFile, string title, bool published, DateTime uploadedOnUTC, int uploadedBy, int displayOrder, string defaultFileName = "", string virtualPath = "")
         {
             var fileName = formFile.FileName;
             if (string.IsNullOrEmpty(fileName) && !string.IsNullOrEmpty(defaultFileName))
@@ -188,14 +190,14 @@ namespace Wombit.Plugin.Widgets.BetterDocs.Services
             if (!string.IsNullOrEmpty(fileExtension))
                 fileExtension = fileExtension.ToLowerInvariant();
 
-            var document = await UpdateDocumentAsync(documentId, await _downloadService.GetDownloadBitsAsync(formFile), title, uploadedOnUTC, uploadedBy, displayOrder, contentType, fileExtension, _fileProvider.GetFileNameWithoutExtension(fileName));
+            var document = await UpdateDocumentAsync(documentId, await _downloadService.GetDownloadBitsAsync(formFile), title, published, uploadedOnUTC, uploadedBy, displayOrder, contentType, fileExtension, _fileProvider.GetFileNameWithoutExtension(fileName));
 
             if (string.IsNullOrEmpty(virtualPath))
                 return document;
 
             return document;
         }
-        public virtual async Task<Document> UpdateDocumentAsync(int documentId, byte[] documentBinary, string title, DateTime uploadedOnUTC, string uploadedBy, int displayOrder, string contentType, string extension, string seoFilename, bool validateBinary = true)
+        public virtual async Task<Document> UpdateDocumentAsync(int documentId, byte[] documentBinary, string title, bool published, DateTime uploadedOnUTC, int uploadedBy, int displayOrder, string contentType, string extension, string seoFilename, bool validateBinary = true)
         {
             contentType = CommonHelper.EnsureNotNull(contentType);
             contentType = CommonHelper.EnsureMaximumLength(contentType, 20);
@@ -207,7 +209,7 @@ namespace Wombit.Plugin.Widgets.BetterDocs.Services
             if (document == null)
                 return null;
 
-            await DeletePictureFromFileSystemAsync(document);
+            await DeleteDocumentFromFileSystemAsync(document);
 
             document.ContentType = contentType;
             document.SeoFilename = seoFilename;
@@ -226,7 +228,7 @@ namespace Wombit.Plugin.Widgets.BetterDocs.Services
 
         public virtual async Task DeleteDocumentAsync(Document document)
         {
-            await DeletePictureFromFileSystemAsync(document);
+            await DeleteDocumentFromFileSystemAsync(document);
 
             await _documentRepository.DeleteAsync(document);
         }
@@ -254,7 +256,7 @@ namespace Wombit.Plugin.Widgets.BetterDocs.Services
 
             return await _fileProvider.ReadAllBytesAsync(filePath);
         }
-        public virtual async Task DeletePictureFromFileSystemAsync(Document document)
+        public virtual async Task DeleteDocumentFromFileSystemAsync(Document document)
         {
             if (document == null)
                 throw new ArgumentNullException(nameof(document));
@@ -273,36 +275,18 @@ namespace Wombit.Plugin.Widgets.BetterDocs.Services
             return await LoadDocumentFromFileAsync(document.Id, document.ContentType); ;
         }
 
-        protected virtual Task<string> GetDocumentLocalPathAsync(string fileName)
+        protected virtual async Task<string> GetDocumentLocalPathAsync(string fileName)
         {
 
-            var settings = _settingService.GetAllSettingsAsync().Result;
+            var settings = await _settingService.LoadSettingAsync<BetterDocsSettings>();
 
-            var searchString = "betterdocs.location";
-
-            var resultSettings = settings.First(m => m.Name.StartsWith(searchString));
-
-
-            
-
-            if(resultSettings == null)
+            if (!_fileProvider.DirectoryExists("wwwroot/" + settings.FileLocation))
             {
-                
+                _fileProvider.CreateDirectory("wwwroot/" + settings.FileLocation);
 
-
-                return Task.FromResult(_fileProvider.GetAbsolutePath("files", fileName));
             }
-            else
-            {
 
-                if (!_fileProvider.DirectoryExists(resultSettings.Value))
-                {
-                    _fileProvider.CreateDirectory(resultSettings.Value);
-
-                }
-
-                return Task.FromResult(_fileProvider.GetAbsolutePath(resultSettings.Value, fileName));
-            }
+            return _fileProvider.GetAbsolutePath(settings.FileLocation, fileName);
 
            
         }

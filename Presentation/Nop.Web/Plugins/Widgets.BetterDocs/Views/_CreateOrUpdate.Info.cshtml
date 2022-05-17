@@ -138,7 +138,8 @@
                     <!-- or put a simple form for upload here -->
                 </noscript>
             </div>
-            <script type="text/template" id="@(clientId)-qq-template">
+
+          @*  <script type="text/template" id="@(clientId)-qq-template">
                 <div class="qq-uploader-selector qq-uploader">
                     <div class="qq-upload-drop-area-selector qq-upload-drop-area" qq-hide-dropzone>
                         <span>@T("Common.FileUploader.DropFiles")</span>
@@ -167,13 +168,13 @@
                         </li>
                     </ul>
                 </div>
-            </script>
+            </script>*@
 
             <div style="clear: both;">
                 <div id="@(clientId + "downloadurl")" class="float-left my-1">
                     @if (Model.Id > 0)
                     {
-                        <a class='btn btn-default' href="@(Url.Action("DownloadFile", "BetterDocs", new { id = Model.Id, area = AreaNames.Admin }))"><i class='fas fa-download'></i>@T("Admin.Download.DownloadUploadedFile")</a>
+                        <a class='btn btn-default' href="@(Url.Action("DownloadFile", "BetterDocs", new { id = Model.Id, area = AreaNames.Admin }))"><i class='fas fa-download'></i>Download @T(Model.SeoFilename + Model.Extension)</a>
                     }
                 </div>
             </div>
@@ -222,7 +223,7 @@
                 autoUpload: false,
 
             }).on("complete", function (event, id, name, responseJSON, xhr) {
-                $("#@(clientId + "downloadurl")").html("<a class='btn btn-default ml-1' href='" + responseJSON.downloadUrl + "'><i class='fas fa-download'></i>@T("Admin.Download.DownloadUploadedFile")</a>");
+                $("#@(clientId + "downloadurl")").html("<a class='btn btn-default ml-1' href='" + responseJSON.downloadUrl + "'><i class='fas fa-download'></i>Download @T(Model.SeoFilename + Model.Extension)</a>");
                 $("#Id").val(responseJSON.documentId);
                 $("#@(clientId + "remove")").show();
 

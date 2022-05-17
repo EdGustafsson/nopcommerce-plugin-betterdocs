@@ -77,7 +77,7 @@ namespace Wombit.Plugin.Widgets.BetterDocs
         {
             var settings = new BetterDocsSettings
             {
-                FileLocation = ""
+                FileLocation = "documents"
             };
             await _settingService.SaveSettingAsync(settings);
 

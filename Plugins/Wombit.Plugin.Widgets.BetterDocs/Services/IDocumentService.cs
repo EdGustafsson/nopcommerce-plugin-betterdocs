@@ -27,15 +27,15 @@ namespace Wombit.Plugin.Widgets.BetterDocs.Services
         Task InsertDocumentMappingAsync(DocumentMapping documentMapping);
         Task<IList<DocumentMapping>> GetDocumentMappingsByEntityIdAsync(int id, string keyGroup);
         Task<IList<Document>> GetDocumentsByMappingEntityId(int id, string keyGroup);
-        Task<Document> InsertDocumentAsync(IFormFile formFile, string title, DateTime uploadedOnUTC, string uploadedBy, int displayOrder, string defaultFileName = "", string virtualPath = "");
-        Task<Document> InsertDocumentAsync(byte[] documentBinary, string title, DateTime uploadedOnUTC, string uploadedBy, int displayOrder, string contentType, string extension, string seoFilename, bool validateBinary = true);
+        Task<Document> InsertDocumentAsync(IFormFile formFile, string title, bool published, DateTime uploadedOnUTC, int uploadedBy, int displayOrder, string defaultFileName = "", string virtualPath = "");
+        Task<Document> InsertDocumentAsync(byte[] documentBinary, string title, bool published, DateTime uploadedOnUTC, int uploadedBy, int displayOrder, string contentType, string extension, string seoFilename, bool validateBinary = true);
         Task<Document> UpdateDocumentInfoAsync(int documentId, byte[] documentBinary, string contentType,
-        string seoFilename, string title);
-        Task<Document> UpdateDocumentAsync(int documentId, IFormFile formFile, string title, DateTime uploadedOnUTC, string uploadedBy, int displayOrder, string defaultFileName = "", string virtualPath = "");
-        Task<Document> UpdateDocumentAsync(int documentId, byte[] documentBinary, string title, DateTime uploadedOnUTC, string uploadedBy, int displayOrder, string contentType, string extension, string seoFilename, bool validateBinary = true);
+        string seoFilename, string title, bool published);
+        Task<Document> UpdateDocumentAsync(int documentId, IFormFile formFile, string title, bool published, DateTime uploadedOnUTC, int uploadedBy, int displayOrder, string defaultFileName = "", string virtualPath = "");
+        Task<Document> UpdateDocumentAsync(int documentId, byte[] documentBinary, string title, bool published, DateTime uploadedOnUTC, int uploadedBy, int displayOrder, string contentType, string extension, string seoFilename, bool validateBinary = true);
         Task<byte[]> LoadDocumentBinaryAsync(Document document);
         Task<byte[]> LoadDocumentFromFileAsync(int documentId, string extension);
-        Task DeletePictureFromFileSystemAsync(Document document);
+        Task DeleteDocumentFromFileSystemAsync(Document document);
     }
 }
 

@@ -51,18 +51,6 @@ namespace Wombit.Plugin.Widgets.BetterDocs.Controllers
         public async Task<IActionResult> Configure()
         {
 
-            //var documents = await _documentService.GetDocumentsAsync();
-
-            //var models = new List<DocumentModel>();
-
-            //foreach (var document in documents)
-            //{
-            //    models.Add(new DocumentModel
-            //    {
-            //        Title = document.Title
-            //    });
-            //}
-
             var model = await _documentModelFactory.PrepareDocumentSearchModelAsync(new DocumentSearchModel());
 
             return View("~/Plugins/Widgets.BetterDocs/Views/Configure.cshtml", model);
@@ -98,38 +86,6 @@ namespace Wombit.Plugin.Widgets.BetterDocs.Controllers
 
             return View("~/Plugins/Widgets.BetterDocs/Views/Edit.cshtml", model);
         }
-
-        //[HttpPost, ParameterBasedOnFormName("save-continue", "continueEditing")]
-        //public virtual async Task<IActionResult> Edit(DocumentModel model, bool continueEditing)
-        //{
-
-        //    var document = await _documentService.GetDocumentByIdAsync(model.Id);
-        //    if (document == null)
-        //        return RedirectToAction("Configure");
-
-        //    if (ModelState.IsValid)
-        //    {
-
-        //        //document = model.ToEntity(document);
-        //        //await _documentService.UpdateAsync(document);
-
-
-        //        await _documentService.UpdateDocumentInfoAsync(document.Id,
-        //        await _documentService.LoadDocumentBinaryAsync(document),
-        //            document.ContentType,
-        //            document.SeoFilename,
-        //            model.Title);
-
-        //        if (!continueEditing)
-        //            return RedirectToAction("Configure");
-
-        //        return RedirectToAction("Edit", new { id = document.Id });
-        //    }
-
-        //    model = await _documentModelFactory.PrepareDocumentModelAsync(model, document);
-
-        //    return View("~/Plugins/Widgets.BetterDocs/Views/Edit.cshtml", model);
-        //}
 
         [HttpPost]
         public virtual async Task<IActionResult> Delete(int id)
@@ -282,25 +238,25 @@ namespace Wombit.Plugin.Widgets.BetterDocs.Controllers
             var document = new Document();
 
             var uploadedOnUTC = DateTime.UtcNow;
-            var uploadedBy = _workContext.GetCurrentCustomerAsync().Result.Username;
+            var uploadedBy = (await _workContext.GetCurrentCustomerAsync()).Id;
             var displayOrder = 1;
+            var published = true;
 
 
             if (existingId != "0")
             {
                 document.Id = Int32.Parse(existingId);
 
-                await _documentService.UpdateDocumentAsync(document.Id, httpPostedFile, title, uploadedOnUTC, uploadedBy, displayOrder, qqFileName);
+                await _documentService.UpdateDocumentAsync(document.Id, httpPostedFile, title, published, uploadedOnUTC, uploadedBy, displayOrder, qqFileName);
             }
             else
             {
-                document = await _documentService.InsertDocumentAsync(httpPostedFile, title, uploadedOnUTC, uploadedBy, displayOrder, qqFileName);
+                document = await _documentService.InsertDocumentAsync(httpPostedFile, title, published, uploadedOnUTC, uploadedBy, displayOrder, qqFileName);
             }
 
 
             if (document == null)
                 return Json(new { success = false, message = "Wrong file format" });
-
 
             if(shouldContinue == "false")
             {
@@ -359,7 +315,8 @@ namespace Wombit.Plugin.Widgets.BetterDocs.Controllers
                 await _documentService.LoadDocumentBinaryAsync(document),
                     document.ContentType,
                     document.SeoFilename,
-                    model.Title);
+                    model.Title,
+                    document.Published);
 
                 if (!shouldContinue)
                 {

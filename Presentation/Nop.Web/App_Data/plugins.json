@@ -64,6 +64,10 @@
       "Version": "1.12"
     },
     {
+      "SystemName": "Widgets.BetterDocs",
+      "Version": "1.0"
+    },
+    {
       "SystemName": "Widgets.FacebookPixel",
       "Version": "1.06"
     },
@@ -78,10 +82,6 @@
     {
       "SystemName": "ExternalAuth.Facebook",
       "Version": "1.68"
-    },
-    {
-      "SystemName": "Widgets.BetterDocs",
-      "Version": "1.0"
     }
   ],
   "PluginNamesToUninstall": [],

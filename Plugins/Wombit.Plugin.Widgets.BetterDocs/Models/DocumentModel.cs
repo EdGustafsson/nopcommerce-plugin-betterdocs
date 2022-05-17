@@ -40,7 +40,7 @@ namespace Wombit.Plugin.Widgets.BetterDocs.Models
         public DateTime UploadedOnUTC { get; set; }
 
         [NopResourceDisplayName("Plugins.Widgets.BetterDocs.Admin.Fields.UploadedBy")]
-        public string UploadedBy { get; set; }
+        public int UploadedBy { get; set; }
         public DocumentMappingSearchModel DocumentMappingSearchModel { get; set; }
 
 
