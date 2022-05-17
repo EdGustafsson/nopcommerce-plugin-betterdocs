@@ -24,6 +24,7 @@ using Nop.Core.Infrastructure;
 using SkiaSharp;
 using Nop.Services.Media;
 using Nop.Core.Domain.Media;
+using Nop.Services.Configuration;
 
 namespace Wombit.Plugin.Widgets.BetterDocs.Services
 {
@@ -37,6 +38,7 @@ namespace Wombit.Plugin.Widgets.BetterDocs.Services
         private readonly IStoreMappingService _storeMappingService;
         private readonly INopFileProvider _fileProvider;
         private readonly IDownloadService _downloadService;
+        private readonly ISettingService _settingService;
 
 
         public DocumentService(
@@ -47,7 +49,9 @@ namespace Wombit.Plugin.Widgets.BetterDocs.Services
             IStoreContext storeContext,
             IStoreMappingService storeMappingService,
             INopFileProvider fileProvider,
-            IDownloadService downloadService)
+            IDownloadService downloadService,
+            ISettingService settingService
+            )
         {
             _documentRepository = documentRepository;
             _eventPublisher = eventPublisher;
@@ -57,6 +61,7 @@ namespace Wombit.Plugin.Widgets.BetterDocs.Services
             _storeMappingService = storeMappingService;
             _fileProvider = fileProvider;
             _downloadService = downloadService;
+            _settingService = settingService;
         }
 
         public virtual async Task<IPagedList<Document>> GetAllDocumentsAsync(int id = 0, int pageIndex = 0, int pageSize = int.MaxValue)
@@ -270,7 +275,36 @@ namespace Wombit.Plugin.Widgets.BetterDocs.Services
 
         protected virtual Task<string> GetDocumentLocalPathAsync(string fileName)
         {
-            return Task.FromResult(_fileProvider.GetAbsolutePath("images", fileName));
+
+            var settings = _settingService.GetAllSettingsAsync().Result;
+
+            var searchString = "betterdocs.location";
+
+            var resultSettings = settings.First(m => m.Name.StartsWith(searchString));
+
+
+            
+
+            if(resultSettings == null)
+            {
+                
+
+
+                return Task.FromResult(_fileProvider.GetAbsolutePath("files", fileName));
+            }
+            else
+            {
+
+                if (!_fileProvider.DirectoryExists(resultSettings.Value))
+                {
+                    _fileProvider.CreateDirectory(resultSettings.Value);
+
+                }
+
+                return Task.FromResult(_fileProvider.GetAbsolutePath(resultSettings.Value, fileName));
+            }
+
+           
         }
         protected virtual Task<string> GetFileExtensionFromContentTypeAsync(string contentType)
         {

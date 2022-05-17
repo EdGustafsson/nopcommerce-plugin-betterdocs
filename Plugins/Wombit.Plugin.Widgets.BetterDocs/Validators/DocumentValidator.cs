@@ -10,9 +10,9 @@ namespace Wombit.Plugin.Widgets.BetterDocs.Validators
         public DocumentValidator(ILocalizationService localizationService)
         {
             RuleFor(x => x.Title).NotEmpty().WithMessageAwait(
-                localizationService.GetResourceAsync("Wombit.Document.Required"), nameof(DocumentModel.Title));
+                localizationService.GetResourceAsync("Plugins.Widgets.BetterDocs.Admin.Required"), nameof(DocumentModel.Title));
             RuleFor(x => x.Id).GreaterThan(0).WithMessageAwait(
-                localizationService.GetResourceAsync("Wombit.Document.Required"), localizationService.GetResourceAsync("Wombit.Document.Fields.DownloadId"));
+                localizationService.GetResourceAsync("Plugins.Widgets.BetterDocs.Admin.Required"), localizationService.GetResourceAsync("Wombit.Document.Fields.DownloadId"));
         }
     }
 }

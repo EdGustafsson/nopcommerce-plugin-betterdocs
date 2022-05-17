@@ -75,6 +75,11 @@ namespace Wombit.Plugin.Widgets.BetterDocs
         }
         public override async Task InstallAsync()
         {
+            var settings = new BetterDocsSettings
+            {
+                FileLocation = ""
+            };
+            await _settingService.SaveSettingAsync(settings);
 
             await _localizationService.AddLocaleResourceAsync(new Dictionary<string, string>
             {
@@ -99,7 +104,9 @@ namespace Wombit.Plugin.Widgets.BetterDocs
                 ["Plugins.Widgets.BetterDocs.Admin.Fields.SaveBeforeEdit"] = "Please save document before adding products",
                 ["Plugins.Widgets.BetterDocs.Admin.Fields.Upload"] = "Upload file",
                 ["Plugins.Widgets.BetterDocs.Admin.Fields.ReplaceUpload"] = "Replace file",
-                ["Plugins.Widgets.BetterDocs.Admin.Fields.Documents.Edit"] = "Edit Document"
+                ["Plugins.Widgets.BetterDocs.Admin.Fields.Documents.Edit"] = "Edit Document",
+                ["Plugins.Widgets.BetterDocs.Admin.FileLocation"] = "Enter file location",
+                ["Plugins.Widgets.BetterDocs.Admin.Required"] = "Please input a title"
 
             });
 
@@ -108,6 +115,8 @@ namespace Wombit.Plugin.Widgets.BetterDocs
 
         public override async Task UninstallAsync()
         {
+            await _settingService.DeleteSettingAsync<BetterDocsSettings>();
+
             await _localizationService.DeleteLocaleResourcesAsync("Plugins.Widgets.BetterDocs");
 
             await base.UninstallAsync();
