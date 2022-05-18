@@ -13,11 +13,6 @@ namespace Wombit.Plugin.Widgets.BetterDocs.Models
     {
         public DocumentModel()
         {
-            if (PageSize < 1)
-            {
-                PageSize = 5;
-            }
-
             DocumentMappingSearchModel = new DocumentMappingSearchModel();
         }
 
@@ -35,19 +30,16 @@ namespace Wombit.Plugin.Widgets.BetterDocs.Models
         public string ContentType { get; set; }
         [NopResourceDisplayName("Plugins.Widgets.BetterDocs.Admin.Fields.Extension")]
         public string Extension { get; set; }
-
         [NopResourceDisplayName("Plugins.Widgets.BetterDocs.Admin.Fields.UploadedOnUTC")]
         public DateTime UploadedOnUTC { get; set; }
-
         [NopResourceDisplayName("Plugins.Widgets.BetterDocs.Admin.Fields.UploadedBy")]
         public int UploadedBy { get; set; }
 
 
+
+        
         public DocumentMappingSearchModel DocumentMappingSearchModel { get; set; }
 
-
-        [NopResourceDisplayName("Plugins.Widgets.BetterDocs.Admin.Fields.PageSize")]
-        public int PageSize { get; set; }
     }
    
 }
