@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace Wombit.Plugin.Widgets.BetterDocs.Models
 {
-    public record DocumentModel : BaseNopEntityModel, ILocalizedModel<DocumentLocalizedModel>
+    public record DocumentModel : BaseNopEntityModel
     {
         public DocumentModel()
         {
@@ -18,8 +18,6 @@ namespace Wombit.Plugin.Widgets.BetterDocs.Models
                 PageSize = 5;
             }
 
-            Locales = new List<DocumentLocalizedModel>();
-          
             DocumentMappingSearchModel = new DocumentMappingSearchModel();
         }
 
@@ -54,33 +52,8 @@ namespace Wombit.Plugin.Widgets.BetterDocs.Models
 
         [NopResourceDisplayName("Plugins.Widgets.BetterDocs.Admin.Fields.Published")]
         public bool Published { get; set; }
-        public IList<DocumentLocalizedModel> Locales { get; set; }
         [NopResourceDisplayName("Plugins.Widgets.BetterDocs.Admin.Fields.FileIncludeInTopMenuName")]
         public bool IncludeInTopMenu { get; set; }
     }
-
-    public partial record DocumentLocalizedModel : ILocalizedLocaleModel
-    {
-        public int LanguageId { get; set; }
-
-        [UIHint("Download")]
-        [NopResourceDisplayName("Plugins.Widgets.BetterDocs.Admin.Fields.DownloadId")]
-        public int DownloadId { get; set; }
-        public Guid DownloadGuid { get; set; }
-
-        [NopResourceDisplayName("Plugins.Widgets.BetterDocs.Admin.Fields.Title")]
-        public string Title { get; set; }
-
-        [NopResourceDisplayName("Plugins.Widgets.BetterDocs.Admin.Fields.FileName")]
-        public string FileName { get; set; }
-
-        [NopResourceDisplayName("Plugins.Widgets.BetterDocs.Admin.Fields.DisplayOrder")]
-        public int DisplayOrder { get; set; }
-
-        [NopResourceDisplayName("Plugins.Widgets.BetterDocs.Admin.Fields.UploadedOnUTC")]
-        public DateTime UploadedOnUTC { get; set; }
-
-        [NopResourceDisplayName("Plugins.Widgets.BetterDocs.Admin.Fields.UploadedBy")]
-        public string UploadedBy { get; set; }
-    }
+   
 }

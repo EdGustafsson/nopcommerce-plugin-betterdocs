@@ -106,7 +106,7 @@ namespace Wombit.Plugin.Widgets.BetterDocs.Controllers
         public virtual async Task<IActionResult> DeleteSelected(ICollection<int> selectedIds)
         {
 
-            if (selectedIds != null)
+            if (selectedIds != null)    
             {
 
                 await _documentService.DeleteDocumentsAsync(await _documentService.GetDocumentsByIdsAsync(selectedIds.ToArray()));

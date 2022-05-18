@@ -193,7 +193,6 @@ namespace Wombit.Plugin.Widgets.BetterDocs.Factories
 
         public virtual async Task<DocumentModel> PrepareDocumentModelAsync(DocumentModel documentModel, Document document)
         {
-            Action<DocumentLocalizedModel, int> localizedModelConfiguration = null;
 
             if (document != null)
             {
