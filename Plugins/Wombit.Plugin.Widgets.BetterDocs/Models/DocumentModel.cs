@@ -27,6 +27,8 @@ namespace Wombit.Plugin.Widgets.BetterDocs.Models
         [NopResourceDisplayName("Plugins.Widgets.BetterDocs.Admin.Fields.FileName.Input")]
         public string SeoFilename { get; set; }
 
+        [NopResourceDisplayName("Plugins.Widgets.BetterDocs.Admin.Fields.Published")]
+        public bool Published { get; set; }
         [NopResourceDisplayName("Plugins.Widgets.BetterDocs.Admin.Fields.DisplayOrder")]
         public int DisplayOrder { get; set; }
         [NopResourceDisplayName("Plugins.Widgets.BetterDocs.Admin.Fields.ContentType")]
@@ -39,21 +41,13 @@ namespace Wombit.Plugin.Widgets.BetterDocs.Models
 
         [NopResourceDisplayName("Plugins.Widgets.BetterDocs.Admin.Fields.UploadedBy")]
         public int UploadedBy { get; set; }
+
+
         public DocumentMappingSearchModel DocumentMappingSearchModel { get; set; }
 
 
         [NopResourceDisplayName("Plugins.Widgets.BetterDocs.Admin.Fields.PageSize")]
         public int PageSize { get; set; }
-        [NopResourceDisplayName("Plugins.Widgets.BetterDocs.Admin.Fields.AllowCustomersToSelectPageSize")]
-        public bool AllowCustomersToSelectPageSize { get; set; }
-
-        [NopResourceDisplayName("Plugins.Widgets.BetterDocs.Admin.Fields.PageSizeOptions")]
-        public string PageSizeOptions { get; set; }
-
-        [NopResourceDisplayName("Plugins.Widgets.BetterDocs.Admin.Fields.Published")]
-        public bool Published { get; set; }
-        [NopResourceDisplayName("Plugins.Widgets.BetterDocs.Admin.Fields.FileIncludeInTopMenuName")]
-        public bool IncludeInTopMenu { get; set; }
     }
    
 }
