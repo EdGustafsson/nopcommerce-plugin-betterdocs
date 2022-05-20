@@ -35,8 +35,6 @@ namespace Wombit.Plugin.Widgets.BetterDocs.Models
         [NopResourceDisplayName("Plugins.Widgets.BetterDocs.Admin.Fields.UploadedBy")]
         public int UploadedBy { get; set; }
 
-
-
         
         public DocumentMappingSearchModel DocumentMappingSearchModel { get; set; }
 

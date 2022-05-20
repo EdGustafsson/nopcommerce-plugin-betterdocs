@@ -38,6 +38,11 @@
         </div>
 
 
+
+
+
+
+
         <script type="text/template" id="qq-template-manual-trigger">
             <div class="qq-uploader-selector qq-uploader" qq-drop-area-text="Drop files here">
                 <div class="qq-total-progress-bar-container-selector qq-total-progress-bar-container">
@@ -163,22 +168,20 @@
     <script>
         $(document).ready(function () {
 
-              let title = ''
               let shouldContinue = null
+              let editInfo = null
 
             $("#@clientId").fineUploader({
                 request: {
                   endpoint: '@(Url.Action("AsyncUpload", "BetterDocs", new { area = AreaNames.Admin }))',
                   params: {
-                      id: @Model.Id,
-                      title: function ()
-                      {
-                      const el = document.querySelector('#Title')
-                      if (el) return el.value;
-                      },
                       shouldContinue: function ()
                       {
                           return shouldContinue
+                      },
+                       editInfo: function ()
+                      {
+                          return editInfo
                       }
                       }
                 },
@@ -212,59 +215,66 @@
                 $(this).hide();
             });
 
-             $('#trigger-upload').click(function(e) {
+             $("[name='save']").click(function(e) {
+                 shouldContinue = false;
 
-                  let form = $('#document-form');
+                 let pendingUpload = $("#@clientId").fineUploader('getRemainingAllowedItems');
 
-                  if (form.valid()) {
+                 if(pendingUpload == 1 && @Model.Id > 0){
 
-                  e.preventDefault();
-                  let pendingUpload = $("#@clientId").fineUploader('getRemainingAllowedItems');
-                    const el = document.querySelector('#Title')
-
-                      if (el) {title=el.value;}
-
-                      shouldContinue = false;
-
-                      if(pendingUpload == 1 && @Model.Id > 0){
-
-                            window.location.href='@Url.Action("AsyncUpdate","BetterDocs",new { shouldContinue = "SHOULDCONTINUE"})'
-                            .replace("SHOULDCONTINUE", shouldContinue);
+                               editInfo = true;
 
                       }
-                      else{
-                      $("#@clientId").fineUploader('uploadStoredFiles');
-                      }
-                  }
              });
 
+             $("[name='save-continue']").click(function(e) {
 
-             $('#trigger-upload-continue').click(function(e) {
+                 shouldContinue = true;   
 
-                  let form = $('#document-form');
+                 if(pendingUpload == 1 && @Model.Id > 0){
 
-                  if (form.valid()) {
-                  e.preventDefault();
+                               editInfo = false;
 
-                  let pendingUpload = $("#@clientId").fineUploader('getRemainingAllowedItems');
+                      }   
+             });
 
-                    const el = document.querySelector('#Title')
+             $("[name='edit']").click(function(e) {
 
-                      if (el) {title=el.value;}
+                 edit = true;
+                 shouldContinue = false;   
+                 
+                 let pendingUpload = $("#@clientId").fineUploader('getRemainingAllowedItems');
+                 
+                 if(pendingUpload == 1){
 
-                     shouldContinue = true;
-
-                      if(pendingUpload == 1 && @Model.Id > 0){
-
-                             window.location.href='@Url.Action("AsyncUpdateInfo","BetterDocs",new { shouldContinue = "SHOULDCONTINUE"})'
+                          window.location.href='@Url.Action("AsyncUpdateInfo","BetterDocs",new { shouldContinue = "SHOULDCONTINUE"})'
                             .replace("SHOULDCONTINUE", shouldContinue);
 
-                      }
-                      else{
-                      $("#@clientId").fineUploader('uploadStoredFiles');
-                      }
-                  }
+                 }
+                 else{
+
+                     $('form#qq-form').submit();
+                 }
              });
+             $("[name='edit-continue']").click(function(e) {
+
+                 edit = true;
+                 shouldContinue = true;
+
+                 let pendingUpload = $("#@clientId").fineUploader('getRemainingAllowedItems');
+                 
+                 if(pendingUpload == 1){
+
+                          window.location.href='@Url.Action("AsyncUpdateInfo","BetterDocs",new { shouldContinue = "SHOULDCONTINUE"})'
+                            .replace("SHOULDCONTINUE", shouldContinue);
+
+                 }
+                 else{
+
+                     $('form#qq-form').submit();
+                 }
+             });
+
          });
     </script>
 </div>

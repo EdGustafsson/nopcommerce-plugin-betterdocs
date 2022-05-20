@@ -4,7 +4,10 @@
     Layout = "";
 }
 
-@if(Model.Any())
+@if (Model.Any())
 {
-        @Model
+    <script>
+        window.DOCUMENTS = @Model
+    </script>
 }
+
