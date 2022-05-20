@@ -19,6 +19,6 @@ namespace Wombit.Plugin.Widgets.BetterDocs.Models
         [NopResourceDisplayName("Plugins.Widgets.BetterDocs.Admin.Fields.Extension")]
         public string Extension { get; set; }
 
-        public string DownloadUrl = "admin/betterdocs/downloadfile/";
+        public string DownloadUrl = "/betterdocs/downloadfile/";
     }
 }
