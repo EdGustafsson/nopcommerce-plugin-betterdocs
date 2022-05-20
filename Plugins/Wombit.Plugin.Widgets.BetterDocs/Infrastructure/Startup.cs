@@ -4,8 +4,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Nop.Core.Infrastructure;
-using Wombit.Plugin.Widgets.BetterDocs.Models;
-using Wombit.Plugin.Widgets.BetterDocs.Validators;
+using Wombit.Plugin.Widgets.BetterDocs.Areas.Admin.Models;
+using Wombit.Plugin.Widgets.BetterDocs.Areas.Admin.Validators;
 
 namespace Wombit.Plugin.Widgets.BetterDocs.Infrastructure
 {

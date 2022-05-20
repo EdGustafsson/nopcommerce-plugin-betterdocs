@@ -1,8 +1,9 @@
 ﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
+using Wombit.Plugin.Widgets.BetterDocs.Areas.Admin.Models;
 using Wombit.Plugin.Widgets.BetterDocs.Models;
-using Wombit.Plugin.Widgets.BetterDocs.Services;
+using Wombit.Plugin.Widgets.BetterDocs.Areas.Admin.Services;
 using Nop.Services.Localization;
 using Nop.Services.Stores;
 using Nop.Web.Framework.Models.Extensions;

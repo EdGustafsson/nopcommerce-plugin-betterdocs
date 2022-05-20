@@ -1,4 +1,5 @@
 ﻿using System.Threading.Tasks;
+using Wombit.Plugin.Widgets.BetterDocs.Areas.Admin.Models;
 using Wombit.Plugin.Widgets.BetterDocs.Models;
 using Wombit.Plugin.Widgets.BetterDocs.Domain;
 using System.Collections.Generic;

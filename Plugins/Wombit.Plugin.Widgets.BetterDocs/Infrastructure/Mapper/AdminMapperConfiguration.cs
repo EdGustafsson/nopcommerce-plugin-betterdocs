@@ -2,6 +2,7 @@
 using Nop.Core.Infrastructure.Mapper;
 using Wombit.Plugin.Widgets.BetterDocs.Domain;
 using Wombit.Plugin.Widgets.BetterDocs.Models;
+using Wombit.Plugin.Widgets.BetterDocs.Areas.Admin.Models;
 
 
 namespace Wombit.Plugin.Widgets.BetterDocs.Infrastructure.Mapper

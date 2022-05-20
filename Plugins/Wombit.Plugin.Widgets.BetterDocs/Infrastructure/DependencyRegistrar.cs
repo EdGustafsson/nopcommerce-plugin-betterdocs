@@ -10,7 +10,7 @@ using Nop.Core.Infrastructure;
 using Autofac;
 using Nop.Core.Configuration;
 using Nop.Core.Infrastructure.DependencyManagement;
-using Wombit.Plugin.Widgets.BetterDocs.Services;
+using Wombit.Plugin.Widgets.BetterDocs.Areas.Admin.Services;
 using Wombit.Plugin.Widgets.BetterDocs.Factories;
 
 

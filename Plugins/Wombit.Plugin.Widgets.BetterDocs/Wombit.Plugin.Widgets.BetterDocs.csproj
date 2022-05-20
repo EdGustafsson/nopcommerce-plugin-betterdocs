@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 	<PropertyGroup>
 		<TargetFramework>net5.0</TargetFramework>
 		<Copyright>SOME_COPYRIGHT</Copyright>
@@ -32,45 +32,45 @@
 		<ClearPluginAssemblies Include="$(MSBuildProjectDirectory)\..\..\Build\ClearPluginAssemblies.proj" />
 	</ItemGroup>
 	<ItemGroup>
-	  <Content Include="Views\Configure.cshtml">
+	  <Content Include="Areas\Admin\Views\Shared\Components\Configure.cshtml">
 	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 	  </Content>
-	  <Content Include="Views\Create.cshtml">
+	  <Content Include="Areas\Admin\Views\Shared\Components\Create.cshtml">
 	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 	  </Content>
-	  <Content Include="Views\Edit.cshtml">
+	  <Content Include="Areas\Admin\Views\Shared\Components\Edit.cshtml">
 	    <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
 	    <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
 	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 	  </Content>
-	  <Content Include="Views\ProductAddPopup.cshtml">
+	  <Content Include="Areas\Admin\Views\Shared\Components\ProductAddPopup.cshtml">
 	    <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
 	    <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
 	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 	  </Content>
-	  <Content Include="Views\PublicInfo.cshtml">
+	  <Content Include="Views\Shared\Components\PublicInfo.cshtml">
 	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 	  </Content>
-	  <Content Include="Views\_CreateOrUpdate.cshtml">
+	  <Content Include="Areas\Admin\Views\Shared\Components\_CreateOrUpdate.cshtml">
 	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 	  </Content>
-	  <Content Include="Views\_CreateOrUpdate.Info.cshtml">
+	  <Content Include="Areas\Admin\Views\Shared\Components\_CreateOrUpdate.Info.cshtml">
 	    <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
 	    <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
 	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 	  </Content>
-	  <Content Include="Views\_CreateOrUpdate.Products.cshtml">
+	  <Content Include="Areas\Admin\Views\Shared\Components\_CreateOrUpdate.Products.cshtml">
 	    <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
 	    <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
 	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 	  </Content>
-	  <Content Include="Views\_ViewImports.cshtml">
+	  <Content Include="Areas\Admin\Views\Shared\_ViewImports.cshtml">
 	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 	  </Content>
 	  <Content Include="plugin.json">
 	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 	  </Content>
-	  <Content Include="Views\_ViewStart.cshtml">
+	  <Content Include="Areas\Admin\Views\Shared\_ViewStart.cshtml">
 	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 	  </Content>
 	</ItemGroup>

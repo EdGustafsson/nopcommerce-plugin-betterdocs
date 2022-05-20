@@ -9,7 +9,7 @@ using Nop.Web.Framework.Components;
 using System.Collections.Generic;
 using Wombit.Plugin.Widgets.BetterDocs.Models;
 using System.Linq;
-using Wombit.Plugin.Widgets.BetterDocs.Services;
+using Wombit.Plugin.Widgets.BetterDocs.Areas.Admin.Services;
 using Nop.Services.Catalog;
 using Nop.Services.Common;
 using Nop.Services.Customers;
@@ -82,7 +82,7 @@ namespace Wombit.Plugin.Widgets.BetterDocs.Components
                     ContractResolver = new CamelCasePropertyNamesContractResolver()
                 });
 
-                return View("~/Plugins/Widgets.BetterDocs/Views/PublicInfo.cshtml", model);
+                return View("~/Plugins/Widgets.BetterDocs/Views/Shared/Components/PublicInfo.cshtml", model);
             }
 
             return View("");
