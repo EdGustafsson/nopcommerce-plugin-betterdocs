@@ -207,5 +207,34 @@ namespace Wombit.Plugin.Widgets.BetterDocs.Factories
 
             return documentModel;
         }
+
+        public virtual async Task<List<PublicInfoModel>> PreparePublicInfoModelAsync(List<Document> documentList)
+        {
+
+            var documentDisplayModelList = new List<PublicInfoModel>();
+
+            foreach(var document in documentList)
+            {
+                var documentDisplayModel = document.ToModel<PublicInfoModel>();
+
+                documentDisplayModelList.Add(documentDisplayModel);
+            }
+
+            return documentDisplayModelList;
+
+
+            //if (document != null)
+            //{
+            //    if (documentModel == null)
+            //    {
+            //        documentModel = document.ToModel<DocumentModel>();
+            //    }
+
+            //    PrepareDocumentMappingSearchModel(documentModel.DocumentMappingSearchModel, document);
+
+            //}
+
+            //return documentModel;
+        }
     }
 }

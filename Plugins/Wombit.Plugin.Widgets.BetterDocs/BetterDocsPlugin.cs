@@ -121,50 +121,5 @@ namespace Wombit.Plugin.Widgets.BetterDocs
 
             await base.UninstallAsync();
         }
-
-        //public bool HideInWidgetList => false;
-
-        //public string GetWidgetViewComponentName(string widgetZone)
-        //{
-        //    if (widgetZone == AdminWidgetZones.ProductDetailsBlock)
-        //    {
-        //        return "ProductDetailsAdmin";
-        //    }
-        //    else if (widgetZone == "ProductDetailsAfterProductSpecification")
-        //    {
-        //        return "ProductDownloadsComponent";
-        //    }
-
-        //    return "Documents";
-        //}
-
-        //public  Task<IList<string>> GetWidgetZonesAsync()
-        //{
-        //    return Task.FromResult<IList<string>>(new List<string> { PublicWidgetZones.HeaderAfter });
-        //}
-
-        //public override async Task InstallAsync()
-        //{
-        //    await _localizationService.AddLocaleResourceAsync(new Dictionary<string, string>
-        //    {
-        //        ["Plugins.Widgets.BetterDocs.Title"] = "Documents",
-        //        ["Plugins.Widgets.BetterDocs.Fields.DownloadId"] = "File",
-        //        ["Plugins.Widgets.BetterDocs.Fields.DisplayOrder"] = "DisplayOrder",
-        //        ["Plugins.Widgets.BetterDocs.Fields.Title"] = "Title",
-        //        ["Plugins.Widgets.BetterDocs.Required"] = "{0} is required",
-        //        ["Plugins.Widgets.BetterDocs.SaveBeforeEdit"] = "You need to save before adding documents"
-        //    });
-
-        //    await base.InstallAsync();
-        //}
-
-        //public override async Task UninstallAsync()
-        //{
-        //    await _localizationService.DeleteLocaleResourceAsync("Plugins.Widgets.BetterDocs");
-
-        //    await base.UninstallAsync();
-        //}
-
-
     }
 }

@@ -15,6 +15,8 @@ namespace Wombit.Plugin.Widgets.BetterDocs.Infrastructure.Mapper
             CreateMap<DocumentModel, Document>();
             CreateMap<DocumentMappingModel, DocumentMapping>();
             CreateMap<DocumentMapping, DocumentMappingModel>();
+
+            CreateMap<Document, PublicInfoModel>();
         }
 
 

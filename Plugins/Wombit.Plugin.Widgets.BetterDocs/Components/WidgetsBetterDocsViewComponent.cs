@@ -53,11 +53,14 @@ namespace Wombit.Plugin.Widgets.BetterDocs.Components
 
         private readonly IDocumentService _documentService;
         private readonly IProductService _productService;
+        private readonly IDocumentModelFactory _documentModelFactory;
         public WidgetsBetterDocsViewComponent(IDocumentService documentService,
-            IProductService productService)
+            IProductService productService,
+            IDocumentModelFactory documentModelFactory)
         {
             _documentService = documentService;
             _productService = productService;
+            _documentModelFactory = documentModelFactory;
         }
         public async Task<IViewComponentResult> InvokeAsync(string widgetZone, object additionalData)
         {
@@ -67,22 +70,22 @@ namespace Wombit.Plugin.Widgets.BetterDocs.Components
 
             var entity = await _productService.GetProductByIdAsync(entityModel.Id);
 
-            
+            if (widgetZone.Equals(AdminWidgetZones.ProductDetailsBlock))
+            {
 
-            //if (widgetZone.Equals(AdminWidgetZones.ProductDetailsBlock))
-            //{
-                
                 var documentList = await _documentService.GetDocumentsByMappingEntityId(entity.Id, "Product");
 
-                var model = JsonConvert.SerializeObject(documentList, new JsonSerializerSettings
+                var documentDisplayModelList = await _documentModelFactory.PreparePublicInfoModelAsync(documentList.ToList());
+
+                var model = JsonConvert.SerializeObject(documentDisplayModelList, new JsonSerializerSettings
                 {
                     ContractResolver = new CamelCasePropertyNamesContractResolver()
                 });
 
                 return View("~/Plugins/Widgets.BetterDocs/Views/PublicInfo.cshtml", model);
-            //}
-            
-            //return View("");
+            }
+
+            return View("");
 
         }
     }
